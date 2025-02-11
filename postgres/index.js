@@ -9,11 +9,8 @@ module.exports = {
     select_args: () => sql`select
       ${ 1337 } as int,
       ${ 'wat' } as string,
-      ${ new Date() } as timestamp,
       ${ null } as null,
-      ${ false } as boolean,
-      ${ Buffer.from('awesome') } as bytea,
-      ${ sql.json([{ some: 'json' }, { array: 'object' }]) } as json
+      ${ false } as boolean
     `,
     select_where: () => sql`select * from pg_catalog.pg_type where typname = ${ 'bool' }`
   },

@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  web:
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    
+    volumes:
+      - ..:/workspace:cached
+
+    environment:
+      PGPASSWORD: pass
+      PGUSER: user
+      PGDATABASE: data
+      PGHOST: db
+      # set this to true in the development environment until I can get SSL setup on the 
+      # docker postgres instance
+      PGTESTNOSSL: 'true'
+      
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    depends_on:
+      - db
+
+    links:
+      - db:db
+
+  db:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    ports: 
+      - 5432:5432
+    command: postgres -c password_encryption=md5
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_INITDB_ARGS: "--auth-local=md5"
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: user
+      POSTGRES_DB: data

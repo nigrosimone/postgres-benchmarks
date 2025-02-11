@@ -1,3 +1,5 @@
+console.log('Benchmarking...');
+
 const queries = [
       'select',
       'select_arg',
@@ -6,11 +8,11 @@ const queries = [
     ]
     , clients = [
       'postgres',
-      'pg-promise',
-      'pg-promise-native',
+      //'pg-promise',
+      //'pg-promise-native',
       'pg',
       'pg-native',
-      'slonik'
+      //'slonik'
     ]
     , warmup = 3
     , iterations = 10000
@@ -72,6 +74,7 @@ function pad(p, n, c) {
 
 async function test(clientName, done) {
   return new Promise(async resolve => {
+    console.log('Testing', clientName);
     const client = await Promise.resolve(require('./' + clientName))
     const q = queries.flatMap(x => Array(rounds + warmup).fill(x))
 
