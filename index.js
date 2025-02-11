@@ -1,21 +1,15 @@
 console.log('Benchmarking...');
 
 const queries = [
-      'select',
-      'select_arg',
-      'select_args',
       'select_where'
     ]
     , clients = [
       'postgres',
-      //'pg-promise',
-      //'pg-promise-native',
       'pg',
-      'pg-native',
-      //'slonik'
+      'pg-native'
     ]
     , warmup = 3
-    , iterations = 10000
+    , iterations = 1_000
     , rounds = 5
     , variance = false
 

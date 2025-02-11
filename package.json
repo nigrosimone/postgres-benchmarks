@@ -1,5 +1,5 @@
 {
-  "name": "postrges-benchmarks",
+  "name": "pg-bench",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,8 +11,6 @@
   "dependencies": {
     "pg": "8.13.2",
     "pg-native": "3.2.1",
-    "pg-promise": "11.10.2",
-    "postgres": "3.4.5",
-    "slonik": "46.4.0"
+    "postgres": "3.4.5"
   }
 }

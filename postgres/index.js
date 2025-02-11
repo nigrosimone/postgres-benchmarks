@@ -4,14 +4,6 @@ const sql = postgres({ max: 4 })
 
 module.exports = {
   queries: {
-    select: () => sql`select 1 as x`,
-    select_arg: () => sql`select ${ 1 } as x`,
-    select_args: () => sql`select
-      ${ 1337 } as int,
-      ${ 'wat' } as string,
-      ${ null } as null,
-      ${ false } as boolean
-    `,
     select_where: () => sql`select * from pg_catalog.pg_type where typname = ${ 'bool' }`
   },
   end: () => sql.end({ timeout: 0 })
