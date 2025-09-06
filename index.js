@@ -52,18 +52,21 @@ try {
   process.exit(1);
 }
 
+const qNative = { text: `select 1 as x`, name: "pg-native" };
+const qVanilla = { text: `select 1 as x`, name: "pg" };
+
 summary(() => {
 
   if (global.gc) global.gc();
 
   bench("brianc/node-postgres (pg-native)", () =>
-    pgNative.query({ text: `select 1 as x`, name: "pg-native" })
+    pgNative.query(qNative)
   );
 
   if (global.gc) global.gc();
 
   bench("brianc/node-postgres (pg)", () =>
-    pgVanilla.query({ text: `select 1 as x`, name: "pg" })
+    pgVanilla.query(qVanilla)
   );
 
   if (global.gc) global.gc();
