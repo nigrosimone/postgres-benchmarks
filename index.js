@@ -1,11 +1,15 @@
-import { run, bench, summary, group } from "mitata";
+import { run, bench, summary } from "mitata";
 import pg from "pg";
 import postgres from "postgres";
+import { readFileSync } from "node:fs";
 
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
 );
+const pkDeps = JSON.parse(readFileSync("package.json")).dependencies;
+delete pkDeps["mitata"];
+console.log(pkDeps);
 
 const { native } = pg;
 
@@ -37,7 +41,6 @@ const sqlPrepared = postgres({
   prepare: true,
 });
 
-
 try {
   await pgNative.query("SELECT 1");
   await pgVanilla.query("SELECT 1");
@@ -50,23 +53,25 @@ try {
 }
 
 summary(() => {
-  group("with prepared statement", () => {
-    bench("brianc/node-postgres (pg-native)", () =>
-      pgNative.query({ text: `select 1 as x`, name: "foo" })
-    );
 
-    if (global.gc) global.gc();
+  if (global.gc) global.gc();
 
-    bench("brianc/node-postgres (pg)", () =>
-      pgVanilla.query({ text: `select 1 as x`, name: "foo" })
-    );
+  bench("brianc/node-postgres (pg-native)", () =>
+    pgNative.query({ text: `select 1 as x`, name: "foo" })
+  );
 
-    if (global.gc) global.gc();
+  if (global.gc) global.gc();
 
-    bench("porsager/postgres (postgres)", () => sqlPrepared`select 1 as x`);
+  bench("brianc/node-postgres (pg)", () =>
+    pgVanilla.query({ text: `select 1 as x`, name: "foo" })
+  );
 
-    if (global.gc) global.gc();
-  });
+  if (global.gc) global.gc();
+
+  bench("porsager/postgres (postgres)", () => sqlPrepared`select 1 as x`);
+
+  if (global.gc) global.gc();
+  
 });
 
 await run({
@@ -75,6 +80,8 @@ await run({
   throw: true,
 });
 
-await pgNative.end();
-await pgVanilla.end();
-await sqlPrepared.end();
+await Promise.all([
+  pgNative.end(), 
+  pgVanilla.end(), 
+  sqlPrepared.end()
+]);
