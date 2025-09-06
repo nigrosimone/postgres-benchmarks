@@ -8,7 +8,8 @@ services:
       dockerfile: Dockerfile
     
     volumes:
-      - ..:/workspace:cached
+      - .:/home/node/app:cached
+      - /home/node/app/node_modules
 
     environment:
       PGPASSWORD: pass
@@ -22,7 +23,7 @@ services:
       PGTESTNOSSL: 'true'
       
     # Overrides default command so things don't shut down after the process ends.
-    command: sleep infinity
+    command: ["node", "--expose-gc", "index.js"]
 
     depends_on:
       - db

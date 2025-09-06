@@ -4,16 +4,10 @@ Run benchmark
 ```
 docker-compose build
 docker-compose up
-npm run bench
 ```
 
 output
 ```
-$ npm run bench
-
-> pg-bench@1.0.0 bench
-> node --expose-gc index.js
-
 clk: ~3.41 GHz
 cpu: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz
 runtime: node 24.7.0 (x64-linux)
