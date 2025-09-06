@@ -2,6 +2,7 @@
   "name": "pg-bench",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,7 +13,7 @@
   "dependencies": {
     "mitata": "^1.0.34",
     "pg": "^8.16.3",
-	  "pg-native": "^3.5.2",
+    "pg-native": "^3.5.2",
     "postgres": "^3.4.7"
   }
 }
