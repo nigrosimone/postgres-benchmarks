@@ -36,6 +36,16 @@ const sql = postgres({
   password: process.env.PGPASSWORD,
 });
 
+try {
+  await pgNative.query("SELECT 1");
+  await pgVanilla.query("SELECT 1");
+  await sql`SELECT 1`;
+  console.log("Database connectivity verified");
+} catch (error) {
+  console.error("Database connectivity test failed:", error);
+  process.exit(1);
+}
+
 summary(() => {
   bench("brianc/node-postgres (pg-native)", () =>
     pgNative.query({ text: `select 1 as x`, name: "foo" })
