@@ -42,10 +42,11 @@ const sqlPrepared = postgres({
 });
 
 try {
-  await pgNative.query("SELECT 1");
-  await pgVanilla.query("SELECT 1");
-  await sqlPrepared`SELECT 1`;
-
+  await Promise.all([
+    pgNative.query("SELECT 1"), 
+    pgVanilla.query("SELECT 1"), 
+    sqlPrepared`SELECT 1`
+  ]);
   console.log("Database connectivity verified");
 } catch (error) {
   console.error("Database connectivity test failed:", error);
