@@ -1,85 +1,34 @@
-# Postgres Library Benchmarks for Node.js
+# Postgres benchmark pg VS pg-native VS postgres
 
-This is a set of benchmarks focusing on the performance of Postgres client libraries for Node.js. The benchmarks are primarily direct selects of values to measure the input-output performance and not the Performance of postgres data fetching.
-
-> NB. In daily usage it is very likely that this difference doesn't matter as much since the time spent by the client library is negligable compared to the query time itself.
-
-Currently benchmarked libraries are
-
-- [Postgres.js](https://github.com/porsager/postgres)
-- [pg-promise](https://github.com/vitaly-t/pg-promise)
-- [pg](https://github.com/brianc/node-postgres)
-- [pg-native](https://github.com/brianc/node-pg-native)
-- [slonik](https://github.com/gajus/slonik)
-
-
-## Results
-
-These are the results from running the benchmarks on a Macbook Pro 2,9 GHz Quad-Core Intel Core i7 with a default Postgres 12.6 installation and Node 12.20.1.
-The time is the average of 5 rounds, running the queries 10,000 times after some warmup rounds.
-
-client     |         select |     select_arg |    select_args |   select_where
-:--------- | -------------: | -------------: | -------------: | -------------:
-[Postgres.js](https://github.com/porsager/postgres)   |  0.100s (4.8x) |  0.105s (7.4x) |  0.231s (4.3x) |  0.233s (5.1x)
-[pg-promise](https://github.com/vitaly-t/pg-promise) |  0.360s (1.3x) |  0.427s (1.8x) |  0.662s (1.5x) |  0.801s (1.5x)
-[pg-promise-native](https://github.com/vitaly-t/pg-promise) |  0.371s (1.3x) |  0.435s (1.8x) |  0.673s (1.5x) |  0.807s (1.5x)
-[pg](https://github.com/brianc/node-postgres)         |  0.322s (1.5x) |  0.611s (1.3x) |  0.815s (1.2x) |  1.057s (1.1x)
-[pg-native](https://github.com/brianc/node-pg-native)  |  0.479s (1.0x) |  0.551s (1.4x) |  0.885s (1.1x) |  1.183s (1.0x)
-[slonik](https://github.com/gajus/slonik)     |  0.453s (1.1x) |  0.773s (1.0x) |  0.992s (1.0x) |  1.108s (1.1x)
-
-![results chart](results.png)
-> lower is better
-
-## Query descriptions:
-
-#### select
-
-```sql
-select 1 as x
+Run benchmark
+```
+docker-compose build
+docker-compose up
+npm run bench
 ```
 
-#### select_arg
-
-```sql
-select $1 as x
-
--- $1 is just 1
+output
 ```
+$ npm run bench
 
-#### select_args
-```sql
-select
-  $1 as int,
-  $2 as string,
-  $3 as timestamp,
-  $4 as null,
-  $5 as boolean,
-  $6 as bytea,
-  $7 as json
+> pg-bench@1.0.0 bench
+> node --expose-gc index.js
 
---$1 = 1337
---$2 = 'wat'
---$3 = new Date()
---$4 = null
---$5 = false
---$6 = Buffer.from('awesome')
---$7 = "[{ "some": "json" }, { "array": "object" }]"
-```
+clk: ~3.41 GHz
+cpu: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz
+runtime: node 24.7.0 (x64-linux)
 
-#### select_where
+benchmark                   avg (min … max) p75 / p99    (min … top 1%)
+------------------------------------------- -------------------------------
+pg-native                    630.65 ns/iter 400.00 ns    █                 
+                      (96.00 ns … 24.85 ms)   1.43 µs    █▂                
+                    (  1.19 kb …   4.42 mb)   1.24 kb ▂▂▂██▇▃▂▂▂▁▁▁▁▁▁▁▁▁▁▁
 
-```sql
-select * from pg_catalog.pg_type where typname = $1
+postgres                       1.19 µs/iter 801.11 ns █                    
+                     (580.21 ns … 12.19 µs)   9.09 µs █                    
+                    (242.51  b … 886.45  b) 674.89  b █▇▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
 
---$1 = 'bool'
-```
-
-
-#### Running the benchmark
-
-Ensure you have a PostgreSQL server running. You can add connection details using environment vars PGDATABASE, PGUSER etc.
-
-```bash
-npm install
-npm start
+pg                           745.94 ns/iter 393.00 ns     █                
+                     (106.00 ns … 19.19 ms)   1.27 µs     ██               
+                    (856.00  b …   4.42 mb) 941.59  b ▃▂▂▂██▅▂▂▁▁▁▁▁▁▁▁▁▁▁▁
 ```

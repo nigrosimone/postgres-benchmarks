@@ -1,5 +1,5 @@
 
-FROM node:22-slim
+FROM node:24-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -19,4 +19,4 @@ RUN npm install
 
 COPY --chown=node:node . .
 
-CMD [ "node", "index.js" ]
+CMD [ "node", "--expose-gc", "index.js" ]

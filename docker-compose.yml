@@ -15,6 +15,8 @@ services:
       PGUSER: user
       PGDATABASE: data
       PGHOST: db
+      PGPORT: 5432
+      PGMAX: 10
       # set this to true in the development environment until I can get SSL setup on the 
       # docker postgres instance
       PGTESTNOSSL: 'true'
@@ -29,7 +31,7 @@ services:
       - db:db
 
   db:
-    image: postgres:14-alpine
+    image: postgres:17-alpine
     restart: unless-stopped
     ports: 
       - 5432:5432
