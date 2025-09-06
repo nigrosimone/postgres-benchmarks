@@ -31,21 +31,21 @@ const sql = postgres({
   password: process.env.PGPASSWORD,
 });
 
-bench("pg-native", () =>
+bench("brianc/node-postgres (pg-native)", () =>
   pgNative.query({ text: `select 1 as x`, name: "foo" })
 );
 
 if (global.gc) global.gc();
 
-bench("postgres", () => sql`select 1 as x`);
+bench("brianc/node-postgres (pg)", () => pgVanilla.query({ text: `select 1 as x`, name: "foo" }));
 
 if (global.gc) global.gc();
 
-bench("pg", () => pgVanilla.query({ text: `select 1 as x`, name: "foo" }));
+bench("porsager/postgres (postgres)", () => sql`select 1 as x`);
 
 if (global.gc) global.gc();
 
-bench("postgres-unsafe", () => sql.unsafe(`select 1 as x`, { prepare: true }));
+bench("porsager/postgres (unsafe)", () => sql.unsafe(`select 1 as x`, { prepare: true }));
 
 await run({
   format: "mitata",
