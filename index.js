@@ -49,7 +49,7 @@ summary(() => {
 
   if (global.gc) global.gc();
 
-  bench("porsager/postgres (postgres)", () => sql`select 1 as x`);
+  bench("porsager/postgres (postgres)", () => sql`select 1 as x`); // has auto prepared statements!
 
   if (global.gc) global.gc();
 
