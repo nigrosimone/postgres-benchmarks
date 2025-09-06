@@ -23,7 +23,7 @@ services:
       PGTESTNOSSL: 'true'
       
     # Overrides default command so things don't shut down after the process ends.
-    command: ["node", "--expose-gc", "index.js"]
+    command: ["node", "--expose-gc", "index.js", "--iterations=50000"]
 
     depends_on:
       - db

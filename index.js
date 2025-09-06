@@ -2,6 +2,9 @@ import { run, bench } from "mitata";
 import pg from "pg";
 import postgres from "postgres";
 
+console.log("Running benchmarks...", process.argv.slice(2).join(" "));
+console.log(typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed");
+
 const { native } = pg;
 
 const pgNative = new native.Pool({

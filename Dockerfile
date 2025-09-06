@@ -19,4 +19,4 @@ RUN npm install
 
 COPY --chown=node:node . .
 
-CMD [ "node", "--expose-gc", "index.js" ]
+CMD [ "node", "--expose-gc", "index.js", "--iterations=50000"]
