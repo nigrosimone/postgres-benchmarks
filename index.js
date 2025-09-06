@@ -57,13 +57,13 @@ summary(() => {
   if (global.gc) global.gc();
 
   bench("brianc/node-postgres (pg-native)", () =>
-    pgNative.query({ text: `select 1 as x`, name: "foo" })
+    pgNative.query({ text: `select 1 as x`, name: "pg-native" })
   );
 
   if (global.gc) global.gc();
 
   bench("brianc/node-postgres (pg)", () =>
-    pgVanilla.query({ text: `select 1 as x`, name: "foo" })
+    pgVanilla.query({ text: `select 1 as x`, name: "pg" })
   );
 
   if (global.gc) global.gc();
@@ -71,7 +71,7 @@ summary(() => {
   bench("porsager/postgres (postgres)", () => sqlPrepared`select 1 as x`);
 
   if (global.gc) global.gc();
-  
+
 });
 
 await run({
