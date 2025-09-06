@@ -9,7 +9,7 @@ console.log(
 );
 const pkDeps = JSON.parse(readFileSync("package.json")).dependencies;
 delete pkDeps["mitata"];
-console.log(pkDeps);
+console.log(JSON.stringify(pkDeps, null, 2));
 
 const { native } = pg;
 
