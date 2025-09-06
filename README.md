@@ -1,12 +1,13 @@
-# Postgres benchmark brianc/node-postgres VS porsager/postgres
+# Postgres benchmark 
+## brianc/node-postgres VS porsager/postgres
 
-# Run benchmark
+### Run benchmark
 ```
 docker-compose build
 docker-compose up
 ```
 
-# Output
+### Output
 
 ```
 clk: ~3.59 GHz
