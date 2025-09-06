@@ -2,16 +2,20 @@
 
 ## brianc/node-postgres VS porsager/postgres
 
+- [pg](https://www.npmjs.com/package/pg)
+- [pg-native](https://www.npmjs.com/package/pg-native)
+- [postgres](https://www.npmjs.com/package/postgres)
+
 ### Run benchmark
 
-```
+```shell
 docker-compose build
 docker-compose up
 ```
 
 ### Output
 
-```
+```shell
 Running benchmarks... --iterations=50000
 GC is exposed
 {
