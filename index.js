@@ -45,7 +45,7 @@ bench("pg", () => pgVanilla.query({ text: `select 1 as x`, name: "foo" }));
 
 if (global.gc) global.gc();
 
-bench("postgres-unsafe", () => sql.unsafe(`select 1 as x`));
+bench("postgres-unsafe", () => sql.unsafe(`select 1 as x`, { prepare: true }));
 
 await run({
   format: "mitata",
