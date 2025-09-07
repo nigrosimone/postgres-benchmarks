@@ -3,6 +3,11 @@ import pg from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 
+/**
+ * @typedef { import('pg').QueryConfig } Query
+ * @typedef { import('pg').PoolClient } PoolClient
+ */
+
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
@@ -16,7 +21,7 @@ console.log(JSON.stringify(dependencies, null, 2));
 const { native } = pg;
 
 /**
- * @typedef { import('pg').PoolClient } PoolClient
+ * @type PoolClient
  */
 const pgNative = new native.Pool({
   max: process.env.PGMAX,
@@ -28,7 +33,7 @@ const pgNative = new native.Pool({
 });
 
 /**
- * @typedef { import('pg').PoolClient } PoolClient
+ * @type PoolClient
  */
 const pgVanilla = new pg.Pool({
   max: process.env.PGMAX,
@@ -64,7 +69,7 @@ try {
 const dateNow = new Date();
 
 /**
- * @typedef { import('pg').Query } Query
+ * @type { Query }
  */
 const pgQuery = {
   text: `select
@@ -78,7 +83,6 @@ const pgQuery = {
 };
 
 summary(() => {
-
   bench("brianc/node-postgres (pg-native)", () => pgNative.query(pgQuery), {
     gc: "inner",
   });
@@ -93,7 +97,6 @@ summary(() => {
       sqlPrepared`select ${1337} as int, ${"wat"} as string, ${dateNow} as timestamp, ${null} as null, ${false} as boolean`,
     { gc: "inner" }
   );
-
 });
 
 await run({
