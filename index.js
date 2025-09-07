@@ -43,9 +43,9 @@ const sqlPrepared = postgres({
 
 try {
   await Promise.all([
-    pgNative.query("SELECT 1"), 
-    pgVanilla.query("SELECT 1"), 
-    sqlPrepared`SELECT 1`
+    pgNative.query("SELECT 1"),
+    pgVanilla.query("SELECT 1"),
+    sqlPrepared`SELECT 1`,
   ]);
   console.log("Database connectivity verified");
 } catch (error) {
@@ -53,29 +53,37 @@ try {
   process.exit(1);
 }
 
-const qNative = { text: `select $1 as x`, name: "pg-native", values: [1] };
-const qVanilla = { text: `select $1 as x`, name: "pg", values: [1] };
+const dateNow = new Date();
+
+const pgQuery = {
+  text: `select
+      $1::int as int,
+      $2 as string,
+      $3::timestamp with time zone as timestamp,
+      $4 as null,
+      $5::bool as boolean`,
+  name: "pg",
+  values: [1337, "wat", dateNow.toISOString(), null, false],
+};
 
 summary(() => {
+  if (global.gc) global.gc();
+
+  bench("brianc/node-postgres (pg-native)", () => pgNative.query(pgQuery));
 
   if (global.gc) global.gc();
 
-  bench("brianc/node-postgres (pg-native)", () =>
-    pgNative.query(qNative)
+  bench("brianc/node-postgres (pg)", () => pgVanilla.query(pgQuery));
+
+  if (global.gc) global.gc();
+
+  bench(
+    "porsager/postgres (postgres)",
+    () =>
+      sqlPrepared`select ${1337} as int, ${"wat"} as string, ${dateNow} as timestamp, ${null} as null, ${false} as boolean`
   );
 
   if (global.gc) global.gc();
-
-  bench("brianc/node-postgres (pg)", () =>
-    pgVanilla.query(qVanilla)
-  );
-
-  if (global.gc) global.gc();
-
-  bench("porsager/postgres (postgres)", () => sqlPrepared`select ${1} as x`);
-
-  if (global.gc) global.gc();
-
 });
 
 await run({
@@ -84,8 +92,4 @@ await run({
   throw: true,
 });
 
-await Promise.all([
-  pgNative.end(), 
-  pgVanilla.end(), 
-  sqlPrepared.end()
-]);
+await Promise.all([pgNative.end(), pgVanilla.end(), sqlPrepared.end()]);
