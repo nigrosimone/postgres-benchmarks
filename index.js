@@ -7,9 +7,11 @@ console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
 );
-const pkDeps = JSON.parse(readFileSync("package.json")).dependencies;
-delete pkDeps["mitata"];
-console.log(JSON.stringify(pkDeps, null, 2));
+console.log(`Poll size: ${process.env.PGMAX}`);
+const { dependencies } = JSON.parse(readFileSync("package.json"));
+delete dependencies["mitata"];
+console.log(`Dependencies versions:`);
+console.log(JSON.stringify(dependencies, null, 2));
 
 const { native } = pg;
 
