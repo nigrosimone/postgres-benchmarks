@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bench": "node --expose-gc index.js",
+    "bench": "node --expose-gc --allow-natives-syntax index.js --iterations=50000",
     "docker-build": "docker-compose build",
     "docker-up": "docker-compose up"
   },
