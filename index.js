@@ -38,7 +38,7 @@ const sqlPrepared = postgres({
   host: process.env.PGHOST,
   port: process.env.PGPORT,
   database: process.env.PGDATABASE,
-  user: process.env.PGUSER,
+  username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
   prepare: true, // Automatic creation of prepared statements
 });
