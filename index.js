@@ -25,7 +25,7 @@ const { native } = pg;
  */
 const pgNative = new native.Pool({
   max: process.env.PGMAX,
-  hostname: process.env.PGHOST,
+  host: process.env.PGHOST,
   port: process.env.PGPORT,
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
