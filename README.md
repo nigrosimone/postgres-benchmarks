@@ -5,9 +5,9 @@
 A benchmark focusing on the performance of Postgres client libraries for Node.js, [brianc/node-postgres](https://github.com/brianc/node-postgres) VS [porsager/postgres](https://github.com/porsager/postgres)
 
 Dependencies:
-- [pg](https://www.npmjs.com/package/pg)
-- [pg-native](https://www.npmjs.com/package/pg-native)
-- [postgres](https://www.npmjs.com/package/postgres)
+- [pg (brianc/node-postgres)](https://www.npmjs.com/package/pg)
+- [pg-native (brianc/node-postgres)](https://www.npmjs.com/package/pg-native)
+- [postgres (porsager/postgres)](https://www.npmjs.com/package/postgres)
 
 Query:
 ```sql
