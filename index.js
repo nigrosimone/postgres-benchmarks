@@ -15,6 +15,9 @@ console.log(JSON.stringify(dependencies, null, 2));
 
 const { native } = pg;
 
+/**
+ * @typedef { import('pg').PoolClient } PoolClient
+ */
 const pgNative = new native.Pool({
   max: process.env.PGMAX,
   hostname: process.env.PGHOST,
@@ -24,6 +27,9 @@ const pgNative = new native.Pool({
   password: process.env.PGPASSWORD,
 });
 
+/**
+ * @typedef { import('pg').PoolClient } PoolClient
+ */
 const pgVanilla = new pg.Pool({
   max: process.env.PGMAX,
   host: process.env.PGHOST,
@@ -57,6 +63,9 @@ try {
 
 const dateNow = new Date();
 
+/**
+ * @typedef { import('pg').Query } Query
+ */
 const pgQuery = {
   text: `select
       $1::int as int,
