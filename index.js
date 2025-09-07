@@ -69,23 +69,22 @@ const pgQuery = {
 };
 
 summary(() => {
-  if (global.gc) global.gc();
 
-  bench("brianc/node-postgres (pg-native)", () => pgNative.query(pgQuery));
+  bench("brianc/node-postgres (pg-native)", () => pgNative.query(pgQuery), {
+    gc: "inner",
+  });
 
-  if (global.gc) global.gc();
-
-  bench("brianc/node-postgres (pg)", () => pgVanilla.query(pgQuery));
-
-  if (global.gc) global.gc();
+  bench("brianc/node-postgres (pg)", () => pgVanilla.query(pgQuery), {
+    gc: "inner",
+  });
 
   bench(
     "porsager/postgres (postgres)",
     () =>
-      sqlPrepared`select ${1337} as int, ${"wat"} as string, ${dateNow} as timestamp, ${null} as null, ${false} as boolean`
+      sqlPrepared`select ${1337} as int, ${"wat"} as string, ${dateNow} as timestamp, ${null} as null, ${false} as boolean`,
+    { gc: "inner" }
   );
 
-  if (global.gc) global.gc();
 });
 
 await run({
