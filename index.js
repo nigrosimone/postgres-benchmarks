@@ -53,8 +53,8 @@ try {
   process.exit(1);
 }
 
-const qNative = { text: `select 1 as x`, name: "pg-native" };
-const qVanilla = { text: `select 1 as x`, name: "pg" };
+const qNative = { text: `select $1 as x`, name: "pg-native", values: [1] };
+const qVanilla = { text: `select $1 as x`, name: "pg", values: [1] };
 
 summary(() => {
 
@@ -72,7 +72,7 @@ summary(() => {
 
   if (global.gc) global.gc();
 
-  bench("porsager/postgres (postgres)", () => sqlPrepared`select 1 as x`);
+  bench("porsager/postgres (postgres)", () => sqlPrepared`select ${1} as x`);
 
   if (global.gc) global.gc();
 
