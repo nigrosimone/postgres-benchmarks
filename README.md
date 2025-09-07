@@ -11,7 +11,13 @@ Dependencies:
 
 TLTR: pg-native wins
 
-Query:
+### Fair benchmark
+
+- All libraries execute queries using prepared statements
+- The garbage collector is exposed and triggered after each library benchmark (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#garbage-collection-pressure))
+- The benchmark provides accuracy down to the picosecond (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#accuracy-down-to-picoseconds) )
+
+The query:
 ```sql
 select
   $1::int as int,
@@ -20,6 +26,7 @@ select
   $4 as null,
   $5::bool as boolean
 ```
+The values:
 ```js
 [1337, "wat", new Date().toISOString(), null, false]
 ```
