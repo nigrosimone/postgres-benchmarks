@@ -2,9 +2,23 @@
 
 ## brianc/node-postgres VS porsager/postgres
 
+Dependencies:
 - [pg](https://www.npmjs.com/package/pg)
 - [pg-native](https://www.npmjs.com/package/pg-native)
 - [postgres](https://www.npmjs.com/package/postgres)
+
+Query:
+```sql
+select
+  $1::int as int,
+  $2 as string,
+  $3::timestamp with time zone as timestamp,
+  $4 as null,
+  $5::bool as boolean
+```
+```js
+[1337, "wat", new Date().toISOString(), null, false]
+```
 
 ### Run benchmark
 
@@ -18,6 +32,8 @@ docker-compose up
 ```shell
 Running benchmarks... --iterations=50000
 GC is exposed
+Poll size: 10
+Dependencies versions:
 {
   "pg": "^8.16.3",
   "pg-native": "^3.5.2",
