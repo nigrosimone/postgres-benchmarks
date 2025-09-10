@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
+        "autoremove",
         "brianc",
         "INITDB",
         "libpq",
         "mitata",
+        "noninteractive",
         "PGDATABASE",
         "PGHOST",
         "PGMAX",
