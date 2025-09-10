@@ -15,7 +15,7 @@ WORKDIR /home/node/app
 COPY package*.json ./
 USER node
 
-RUN npm install
+RUN npm ci --only=production
 
 COPY --chown=node:node . .
 
