@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 
 /**
  * @typedef { import('pg').QueryConfig } Query
- * @typedef { import('pg').PoolClient } PoolClient
+ * @typedef { import('pg').Pool } Pool
  */
 
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
@@ -21,7 +21,7 @@ console.log(JSON.stringify(dependencies, null, 2));
 const { native } = pg;
 
 /**
- * @type PoolClient
+ * @type Pool
  */
 const pgNative = new native.Pool({
   max: process.env.PGMAX,
@@ -33,7 +33,7 @@ const pgNative = new native.Pool({
 });
 
 /**
- * @type PoolClient
+ * @type Pool
  */
 const pgVanilla = new pg.Pool({
   max: process.env.PGMAX,
