@@ -89,7 +89,7 @@ const pgQuery: QueryConfig = {
       $3::timestamp with time zone as timestamp,
       $4 as null,
       $5::bool as boolean`,
-  name: "pg",
+  name: "pg", // Creation of prepared statements
   values: [1337, "wat", dateNow.toISOString(), null, false],
 };
 
