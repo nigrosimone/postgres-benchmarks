@@ -17,7 +17,7 @@ const { native } = pg;
 
 if (!native) {
   console.error(
-    "pg-native is not available. Please install pg-native or use pg only."
+    "pg-native is not available. Please install pg-native."
   );
   process.exit(1);
 }
@@ -87,9 +87,6 @@ try {
 
 const dateNow = new Date();
 
-/**
- * @type { Query }
- */
 const pgQuery = {
   text: `select
       $1::int as int,
