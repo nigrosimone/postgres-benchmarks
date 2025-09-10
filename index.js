@@ -1,4 +1,4 @@
-import { run, bench, summary } from "mitata";
+import { run, bench, summary, do_not_optimize } from "mitata";
 import pg from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
@@ -83,18 +83,39 @@ const pgQuery = {
 };
 
 summary(() => {
-  bench("brianc/node-postgres (pg-native)", () => pgNative.query(pgQuery), {
-    gc: "inner",
-  });
-
-  bench("brianc/node-postgres (pg)", () => pgVanilla.query(pgQuery), {
-    gc: "inner",
-  });
+  bench(
+    "pg-native (brianc/node-postgres)",
+    async () => {
+      const results = await pgNative.query(pgQuery);
+      return do_not_optimize(results.rows);
+    },
+    {
+      gc: "inner",
+    }
+  );
 
   bench(
-    "porsager/postgres (postgres)",
-    () =>
-      sqlPrepared`select ${1337} as int, ${"wat"} as string, ${dateNow} as timestamp, ${null} as null, ${false} as boolean`,
+    "pg (brianc/node-postgres)",
+    async () => {
+      const results = await pgVanilla.query(pgQuery);
+      return do_not_optimize(results.rows);
+    },
+    {
+      gc: "inner",
+    }
+  );
+
+  bench(
+    "postgres (porsager/postgres)",
+    async () => {
+      const results = await sqlPrepared`select 
+      ${1337} as int, 
+      ${"wat"} as string, 
+      ${dateNow} as timestamp, 
+      ${null} as null, 
+      ${false} as boolean`;
+      return do_not_optimize(results);
+    },
     { gc: "inner" }
   );
 });
