@@ -9,7 +9,7 @@ Dependencies:
 - [pg-native (brianc/node-postgres)](https://www.npmjs.com/package/pg-native)
 - [postgres (porsager/postgres)](https://www.npmjs.com/package/postgres)
 
-TLTR: pg-native wins
+TL;DR: pg-native wins
 
 ### Fair benchmark
 
