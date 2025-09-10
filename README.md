@@ -33,9 +33,16 @@ The values:
 
 ### Run benchmark
 
+On Docker:
 ```shell
 docker-compose build
 docker-compose up
+```
+
+On NodeJS:
+```shell
+npm install
+npm run bench
 ```
 
 ### Output
