@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bench": "node --expose-gc --allow-natives-syntax index.js --iterations=50000",
+    "bench": "node --expose-gc --allow-natives-syntax index.ts --iterations=50000",
     "docker-build": "docker-compose build",
     "docker-up": "docker-compose up"
   },
@@ -17,5 +17,9 @@
     "pg": "^8.16.3",
     "pg-native": "^3.5.2",
     "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "@types/pg": "^8.15.5"
   }
 }

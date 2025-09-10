@@ -3,51 +3,70 @@ import pg from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 
-/**
- * @typedef { import('pg').QueryConfig } Query
- * @typedef { import('pg').Pool } Pool
- */
-
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
 );
 console.log(`Poll size: ${process.env.PGMAX}`);
-const { dependencies } = JSON.parse(readFileSync("package.json"));
+const { dependencies } = JSON.parse(readFileSync("package.json", "utf-8"));
 delete dependencies["mitata"];
 console.log(`Dependencies versions:`);
 console.log(JSON.stringify(dependencies, null, 2));
 
 const { native } = pg;
 
-/**
- * @type Pool
- */
+if (!native) {
+  console.error(
+    "pg-native is not available. Please install pg-native or use pg only."
+  );
+  process.exit(1);
+}
+
+if (!process.env.PGHOST) {
+  console.error("PGHOST environment variable is not set.");
+  process.exit(1);
+}
+if (!process.env.PGPORT) {
+  console.error("PGPORT environment variable is not set.");
+  process.exit(1);
+}
+if (!process.env.PGDATABASE) {
+  console.error("PGDATABASE environment variable is not set.");
+  process.exit(1);
+} if (!process.env.PGUSER) {
+  console.error("PGUSER environment variable is not set.");
+  process.exit(1);
+} if (!process.env.PGPASSWORD) {
+  console.error("PGPASSWORD environment variable is not set.");
+  process.exit(1);
+}
+if (!process.env.PGMAX) {
+  console.error("PGMAX environment variable is not set.");
+  process.exit(1);
+}
+
 const pgNative = new native.Pool({
-  max: process.env.PGMAX,
+  max: +process.env.PGMAX,
   host: process.env.PGHOST,
-  port: process.env.PGPORT,
+  port: +process.env.PGPORT,
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
 });
 
-/**
- * @type Pool
- */
 const pgVanilla = new pg.Pool({
-  max: process.env.PGMAX,
+  max: +process.env.PGMAX,
   host: process.env.PGHOST,
-  port: process.env.PGPORT,
+  port: +process.env.PGPORT,
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
 });
 
 const sqlPrepared = postgres({
-  max: process.env.PGMAX,
+  max: +process.env.PGMAX,
   host: process.env.PGHOST,
-  port: process.env.PGPORT,
+  port: +process.env.PGPORT,
   database: process.env.PGDATABASE,
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
@@ -88,22 +107,16 @@ summary(() => {
     async () => {
       const results = await pgNative.query(pgQuery);
       return do_not_optimize(results.rows);
-    },
-    {
-      gc: "inner",
     }
-  );
+  ).gc('inner');
 
   bench(
     "pg (brianc/node-postgres)",
     async () => {
       const results = await pgVanilla.query(pgQuery);
       return do_not_optimize(results.rows);
-    },
-    {
-      gc: "inner",
     }
-  );
+  ).gc('inner');
 
   bench(
     "postgres (porsager/postgres)",
@@ -115,9 +128,8 @@ summary(() => {
       ${null} as null, 
       ${false} as boolean`;
       return do_not_optimize(results);
-    },
-    { gc: "inner" }
-  );
+    }
+  ).gc('inner');
 });
 
 await run({
