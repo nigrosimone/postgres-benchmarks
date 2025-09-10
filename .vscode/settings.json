@@ -2,7 +2,9 @@
     "cSpell.words": [
         "autoremove",
         "brianc",
+        "healthcheck",
         "INITDB",
+        "isready",
         "libpq",
         "mitata",
         "noninteractive",

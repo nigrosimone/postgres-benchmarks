@@ -26,7 +26,8 @@ services:
     command: ["node", "--expose-gc", "--allow-natives-syntax", "index.ts", "--iterations=50000"]
 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
     links:
       - db:db
@@ -43,3 +44,8 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_USER: user
       POSTGRES_DB: data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d data"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

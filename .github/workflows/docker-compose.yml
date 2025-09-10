@@ -24,3 +24,19 @@ jobs:
       - name: Run Docker Compose
         run: |
           docker compose up --build
+
+      - name: Wait for PostgreSQL
+        run: |
+          echo "⏳ Waiting for PostgreSQL to be ready..."
+          for i in {1..15}; do
+            if docker exec $(docker ps -qf "name=db") pg_isready -U user -d data; then
+              echo "✅ PostgreSQL is ready!"
+              break
+            fi
+            echo "PostgreSQL is not ready yet... retrying in 3s"
+            sleep 3
+          done
+
+      - name: Run benchmark
+        run: |
+          docker exec $(docker ps -qf "name=web") node --expose-gc --allow-natives-syntax index.ts --iterations=50000
