@@ -1,7 +1,8 @@
 {
-  "name": "pg-bench",
+  "name": "postgres-benchmarks",
   "version": "1.0.0",
-  "description": "",
+  "description": "A benchmark focusing on the performance of Postgres client libraries for Node.js, brianc/node-postgres VS porsager/postgres",
+  "keywords": ["nodejs", "javascript", "benchmark", "postgresql", "node-js"],
   "type": "module",
   "main": "index.ts",
   "scripts": {
