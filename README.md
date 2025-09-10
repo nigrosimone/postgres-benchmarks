@@ -83,3 +83,7 @@ summary
    1.13x faster than pg (brianc/node-postgres)
    1.25x faster than postgres (porsager/postgres)
 ```
+
+### My two cents
+
+`pg-native (brianc/node-postgres)` is a bit faster! but both `pg (brianc/node-postgres)` and `postgres (porsager/postgres)` are pretty close, no difference in real world.
