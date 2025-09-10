@@ -1,5 +1,5 @@
 import { run, bench, summary, do_not_optimize } from "mitata";
-import pg from "pg";
+import pg, { type QueryConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 
@@ -45,23 +45,18 @@ if (!process.env.PGMAX) {
   process.exit(1);
 }
 
-const pgNative = new native.Pool({
+const pgConfig: PoolConfig  = {
   max: +process.env.PGMAX,
   host: process.env.PGHOST,
   port: +process.env.PGPORT,
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
-});
+};
 
-const pgVanilla = new pg.Pool({
-  max: +process.env.PGMAX,
-  host: process.env.PGHOST,
-  port: +process.env.PGPORT,
-  database: process.env.PGDATABASE,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-});
+const pgNative = new native.Pool(pgConfig);
+
+const pgVanilla = new pg.Pool(pgConfig);
 
 const sqlPrepared = postgres({
   max: +process.env.PGMAX,
@@ -87,7 +82,7 @@ try {
 
 const dateNow = new Date();
 
-const pgQuery = {
+const pgQuery: QueryConfig = {
   text: `select
       $1::int as int,
       $2 as string,
