@@ -13,7 +13,7 @@ TLTR: pg-native wins
 
 ### Fair benchmark
 
-- All libraries execute queries using prepared statements
+- All libraries execute queries using prepared statements (see [Prepared statement](https://en.wikipedia.org/wiki/Prepared_statement))
 - The garbage collector is exposed and triggered after each library benchmark (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#garbage-collection-pressure))
 - The benchmark provides accuracy down to the picosecond (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#accuracy-down-to-picoseconds) )
 - The query result isn't optimized (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#dead-code-elimination) )
