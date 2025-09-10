@@ -40,8 +40,9 @@ docker-compose build
 docker-compose up
 ```
 
-On NodeJS:
+On Ubuntu/Debian:
 ```shell
+apt-get install libpq-dev g++ python3 make
 npm install
 npm run bench
 ```
