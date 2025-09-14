@@ -88,7 +88,8 @@ const pgQuery: QueryConfig = {
       $2 as string,
       $3::timestamp with time zone as timestamp,
       $4 as null,
-      $5::bool as boolean`,
+      $5::bool as boolean
+      FROM generate_series(1,5)`,
   name: "pg", // Creation of prepared statements
   values: [1337, "wat", dateNow.toISOString(), null, false],
 };
@@ -118,7 +119,8 @@ summary(() => {
       ${"wat"} as string, 
       ${dateNow} as timestamp, 
       ${null} as null, 
-      ${false} as boolean`;
+      ${false} as boolean
+      FROM generate_series(1,5)`;
       return do_not_optimize(results);
     }
   ).gc('inner');
