@@ -22,12 +22,13 @@ TL;DR: pg-native wins
 The query:
 
 ```sql
-select
+SELECT
   $1::int as int,
   $2 as string,
   $3::timestamp with time zone as timestamp,
   $4 as null,
   $5::bool as boolean
+FROM generate_series(1,5)
 ```
 
 The values:
