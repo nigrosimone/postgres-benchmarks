@@ -5,6 +5,7 @@
 A benchmark focusing on the performance of Postgres client libraries for Node.js, [brianc/node-postgres](https://github.com/brianc/node-postgres) VS [porsager/postgres](https://github.com/porsager/postgres)
 
 Dependencies:
+
 - [pg (brianc/node-postgres)](https://www.npmjs.com/package/pg)
 - [pg-native (brianc/node-postgres)](https://www.npmjs.com/package/pg-native)
 - [postgres (porsager/postgres)](https://www.npmjs.com/package/postgres)
@@ -19,6 +20,7 @@ TL;DR: pg-native wins
 - The query result isn't optimized (see [Mitata](https://github.com/evanwashere/mitata?tab=readme-ov-file#dead-code-elimination) )
 
 The query:
+
 ```sql
 select
   $1::int as int,
@@ -27,7 +29,9 @@ select
   $4 as null,
   $5::bool as boolean
 ```
+
 The values:
+
 ```js
 [1337, "wat", new Date().toISOString(), null, false]
 ```
@@ -35,12 +39,14 @@ The values:
 ### Run benchmark
 
 On Docker:
+
 ```shell
 docker-compose build
 docker-compose up
 ```
 
 On Ubuntu/Debian:
+
 ```shell
 apt-get install libpq-dev g++ python3 make
 npm install
