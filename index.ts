@@ -33,10 +33,12 @@ if (!process.env.PGPORT) {
 if (!process.env.PGDATABASE) {
   console.error("PGDATABASE environment variable is not set.");
   process.exit(1);
-} if (!process.env.PGUSER) {
+}
+if (!process.env.PGUSER) {
   console.error("PGUSER environment variable is not set.");
   process.exit(1);
-} if (!process.env.PGPASSWORD) {
+}
+if (!process.env.PGPASSWORD) {
   console.error("PGPASSWORD environment variable is not set.");
   process.exit(1);
 }
@@ -45,7 +47,7 @@ if (!process.env.PGMAX) {
   process.exit(1);
 }
 
-const pgConfig: PoolConfig  = {
+const pgConfig: PoolConfig = {
   max: +process.env.PGMAX,
   host: process.env.PGHOST,
   port: +process.env.PGPORT,
