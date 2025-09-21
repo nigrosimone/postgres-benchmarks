@@ -15,9 +15,9 @@
   "license": "ISC",
   "dependencies": {
     "mitata": "^1.0.34",
-    "pg": "^8.16.3",
-    "pg-native": "^3.5.2",
-    "postgres": "^3.4.7"
+    "pg": "latest",
+    "pg-native": "latest",
+    "postgres": "latest"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",

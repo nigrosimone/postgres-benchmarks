@@ -8,10 +8,14 @@ console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
 );
 console.log(`Poll size: ${process.env.PGMAX}`);
-const { dependencies } = JSON.parse(readFileSync("package.json", "utf-8"));
-delete dependencies["mitata"];
+const { packages } = JSON.parse(readFileSync("package-lock.json", "utf-8"));
+
 console.log(`Dependencies versions:`);
-console.log(JSON.stringify(dependencies, null, 2));
+console.log(JSON.stringify({
+  pg: packages["node_modules/pg"]?.version,
+  "pg-native": packages["node_modules/pg-native"]?.version,
+  postgres: packages["node_modules/postgres"]?.version,
+}, null, 2));
 
 const { native } = pg;
 
