@@ -147,11 +147,11 @@ bench
     "postgres (porsager/postgres)",
     async () => {
       const results = await sqlPrepared`select 
-      ${1337} as int, 
+      ${1337}::int as int, 
       ${"wat"} as string, 
-      ${dateNow} as timestamp, 
+      ${dateNow}::timestamp with time zone as timestamp, 
       ${null} as null, 
-      ${false} as boolean
+      ${false}::bool as boolean
       FROM generate_series(1,1000)`;
       return consume(results);
     }
