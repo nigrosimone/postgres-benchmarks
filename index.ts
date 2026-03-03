@@ -12,6 +12,7 @@ const { packages } = JSON.parse(readFileSync("package-lock.json", "utf-8"));
 
 console.log(`Dependencies versions:`);
 console.log(JSON.stringify({
+  tinybench: packages["node_modules/tinybench"]?.version,
   pg: packages["node_modules/pg"]?.version,
   "pg-native": packages["node_modules/pg-native"]?.version,
   postgres: packages["node_modules/postgres"]?.version,
