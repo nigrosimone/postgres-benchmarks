@@ -89,7 +89,7 @@ try {
     pgVanilla.query("SELECT 1"),
     sqlPrepared`SELECT 1`,
   ]);
-  console.log("Database connectivity verified");
+  console.log("Database connectivity verified through: " + (socketPath ? `socket at ${socketPath}` : `host ${process.env.PGHOST}:${process.env.PGPORT}`));
 } catch (error) {
   console.error("Database connectivity test failed:", error);
   process.exit(1);
@@ -121,6 +121,7 @@ const consume = (rows: any) => {
 
 const bench = new Bench({
   name: 'postgres-benchmarks',
+  iterations: 5_000,
   setup: (_task, mode) => {
     // Run the garbage collector before warmup at each cycle
     if (mode === 'warmup' && typeof globalThis.gc === 'function') {
@@ -162,7 +163,7 @@ bench
 try {
   if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
   await bench.run();
-  console.log(bench.name);
+  console.log(`nodejs ${process.version}, CPU: ${process.env.CPU || 'unknown'}, RAM: ${process.env.RAM || 'unknown'}`);
   console.table(bench.table());
 } catch (err) {
   console.error('Benchmark run failed:', err);
