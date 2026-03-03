@@ -7,7 +7,7 @@ console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
   typeof global.gc === "function" ? "GC is exposed" : "GC is NOT exposed"
 );
-console.log(`Poll size: ${process.env.PGMAX}`);
+console.log(`Pool size: ${process.env.PGMAX}`);
 const { packages } = JSON.parse(readFileSync("package-lock.json", "utf-8"));
 
 console.log(`Dependencies versions:`);

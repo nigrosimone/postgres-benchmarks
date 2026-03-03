@@ -57,12 +57,13 @@ npm run bench
 ```shell
 Running benchmarks... --iterations=50000
 GC is exposed
-Poll size: 10
+Pool size: 10
 Dependencies versions:
 {
-  "pg": "^8.16.3",
-  "pg-native": "^3.5.2",
-  "postgres": "^3.4.7"
+  "tinybench": "x.x.x",
+  "pg": "x.x.x",
+  "pg-native": "x.x.x",
+  "postgres": "x.x.x"
 }
 Database connectivity verified
 postgres-benchmarks
