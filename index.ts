@@ -105,7 +105,7 @@ const pgQuery: QueryConfig = {
       $5::bool as boolean
       FROM generate_series(1,5)`,
   name: "pg", // Creation of prepared statements
-  values: [1337, "wat", dateNow.toISOString(), null, false],
+  values: [1337, "wat", dateNow, null, false],
 };
 
 const consume = (rows: any) => {
