@@ -26,7 +26,7 @@ SELECT
   $3::timestamp with time zone as timestamp,
   $4 as null,
   $5::bool as boolean
-FROM generate_series(1,5)
+FROM generate_series(1,1000)
 ```
 
 The values:

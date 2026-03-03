@@ -103,7 +103,7 @@ const pgQuery: QueryConfig = {
       $3::timestamp with time zone as timestamp,
       $4 as null,
       $5::bool as boolean
-      FROM generate_series(1,10)`,
+      FROM generate_series(1,1000)`,
   name: "pg", // Creation of prepared statements
   values: [1337, "wat", dateNow, null, false],
 };
@@ -153,7 +153,7 @@ bench
       ${dateNow} as timestamp, 
       ${null} as null, 
       ${false} as boolean
-      FROM generate_series(1,10)`;
+      FROM generate_series(1,1000)`;
       return consume(results);
     }
   );
