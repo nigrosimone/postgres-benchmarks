@@ -19,4 +19,4 @@ RUN npm ci --only=production
 
 COPY --chown=node:node . .
 
-CMD [ "node", "--expose-gc", "--allow-natives-syntax", "index.js", "--iterations=50000"]
+CMD [ "node", "--expose-gc", "index.js"]
