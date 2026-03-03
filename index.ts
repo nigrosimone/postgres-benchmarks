@@ -112,8 +112,7 @@ const consume = (rows: any) => {
   const len = rows.length;
   const results = new Array(len);
   for (let i = 0; i < len; i++) {
-    const row = rows[i];
-    results[i] = row.int;
+    results[i] = rows[i].int;
   }
   (globalThis as any).__do_not_optimize = results;
   return (globalThis as any).__do_not_optimize;
