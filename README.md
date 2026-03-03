@@ -74,7 +74,3 @@ postgres-benchmarks
 │ 2       │ 'postgres (porsager/postgres)'     │ '177100 ± 2.05%' │ '149178 ± 9532.0' │ '6202 ± 0.53%'         │ '6703 ± 438'           │ 5650    │       
 └─────────┴────────────────────────────────────┴──────────────────┴───────────────────┴────────────────────────┴────────────────────────┴─────────┘
 ```
-
-### My two cents
-
-`pg-native (brianc/node-postgres)` is a bit faster! but both `pg (brianc/node-postgres)` and `postgres (porsager/postgres)` are pretty close, no difference in real world.
