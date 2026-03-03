@@ -167,6 +167,6 @@ try {
 } catch (err) {
   console.error('Benchmark run failed:', err);
   process.exit(1);
+} finally {
+  await Promise.all([pgNative.end(), pgVanilla.end(), sqlPrepared.end()]);
 }
-
-await Promise.all([pgNative.end(), pgVanilla.end(), sqlPrepared.end()]);
