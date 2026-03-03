@@ -1,4 +1,4 @@
-import { run, bench, summary, do_not_optimize } from "mitata";
+import { Bench } from "tinybench";
 import pg, { type QueryConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
@@ -115,27 +115,36 @@ const consume = (rows: any) => {
     const row = rows[i];
     results[i] = row.int;
   }
-  return do_not_optimize(results);
+  (globalThis as any).__do_not_optimize = results;
+  return (globalThis as any).__do_not_optimize;
 }
 
-summary(() => {
-  bench(
+const bench = new Bench({
+  name: 'postgres-benchmarks',
+  setup: (_task, mode) => {
+    // Run the garbage collector before warmup at each cycle
+    if (mode === 'warmup' && typeof globalThis.gc === 'function') {
+      globalThis.gc()
+    }
+  },
+});
+
+bench
+  .add(
     "pg-native (brianc/node-postgres)",
     async () => {
       const results = await pgNative.query(pgQuery);
       return consume(results.rows);
     }
-  ).gc('inner');
-
-  bench(
+  )
+  .add(
     "pg (brianc/node-postgres)",
     async () => {
       const results = await pgVanilla.query(pgQuery);
       return consume(results.rows);
     }
-  ).gc('inner');
-
-  bench(
+  )
+  .add(
     "postgres (porsager/postgres)",
     async () => {
       const results = await sqlPrepared`select 
@@ -147,13 +156,17 @@ summary(() => {
       FROM generate_series(1,5)`;
       return consume(results);
     }
-  ).gc('inner');
-});
+  );
 
-await run({
-  format: "mitata",
-  colors: true,
-  throw: true,
-});
+// Run the benchmark and print results
+try {
+  if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
+  await bench.run();
+  console.log(bench.name);
+  console.table(bench.table());
+} catch (err) {
+  console.error('Benchmark run failed:', err);
+  process.exit(1);
+}
 
 await Promise.all([pgNative.end(), pgVanilla.end(), sqlPrepared.end()]);

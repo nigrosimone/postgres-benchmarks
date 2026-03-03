@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mitata": "^1.0.34",
+    "tinybench": "latest",
     "pg": "latest",
     "pg-native": "latest",
     "postgres": "latest"
