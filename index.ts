@@ -2,6 +2,7 @@ import { Bench } from "tinybench";
 import pg, { type QueryConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
+import os from "node:os";
 
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
@@ -163,7 +164,9 @@ bench
 try {
   if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
   await bench.run();
-  console.log(`nodejs ${process.version}, CPU: ${process.env.CPU || 'unknown'}, RAM: ${process.env.RAM || 'unknown'}`);
+  console.log(
+    `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
+  );
   console.table(bench.table());
 } catch (err) {
   console.error('Benchmark run failed:', err);
