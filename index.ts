@@ -26,14 +26,22 @@ if (!native) {
   process.exit(1);
 }
 
-if (!process.env.PGHOST) {
-  console.error("PGHOST environment variable is not set.");
+// Support connecting over Unix domain socket to reduce TCP overhead.
+// You can set `PGSOCKET` to the socket directory (e.g. `/var/run/postgresql`),
+// or set `PGHOST` to the socket directory (starts with `/`).
+const socketPath = process.env.PGSOCKET ?? (process.env.PGHOST && process.env.PGHOST.startsWith('/') ? process.env.PGHOST : undefined);
+
+if (!socketPath && !process.env.PGHOST) {
+  console.error("PGHOST environment variable is not set (or PGSOCKET).");
   process.exit(1);
 }
-if (!process.env.PGPORT) {
+
+// When using a socket path, PGPORT is optional (defaults to 5432).
+if (!socketPath && !process.env.PGPORT) {
   console.error("PGPORT environment variable is not set.");
   process.exit(1);
 }
+
 if (!process.env.PGDATABASE) {
   console.error("PGDATABASE environment variable is not set.");
   process.exit(1);
@@ -53,8 +61,8 @@ if (!process.env.PGMAX) {
 
 const pgConfig: PoolConfig = {
   max: +process.env.PGMAX,
-  host: process.env.PGHOST,
-  port: +process.env.PGPORT,
+  host: socketPath ?? process.env.PGHOST,
+  port: +(process.env.PGPORT ?? 5432),
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
@@ -66,8 +74,8 @@ const pgVanilla = new pg.Pool(pgConfig);
 
 const sqlPrepared = postgres({
   max: +process.env.PGMAX,
-  host: process.env.PGHOST,
-  port: +process.env.PGPORT,
+  host: socketPath ?? process.env.PGHOST,
+  port: +(process.env.PGPORT ?? 5432),
   database: process.env.PGDATABASE,
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
@@ -100,12 +108,22 @@ const pgQuery: QueryConfig = {
   values: [1337, "wat", dateNow.toISOString(), null, false],
 };
 
+const consume = (rows: any) => {
+  const len = rows.length;
+  const results = new Array(len);
+  for (let i = 0; i < len; i++) {
+    const row = rows[i];
+    results[i] = row.int;
+  }
+  return do_not_optimize(results);
+}
+
 summary(() => {
   bench(
     "pg-native (brianc/node-postgres)",
     async () => {
       const results = await pgNative.query(pgQuery);
-      return do_not_optimize(results.rows);
+      return consume(results.rows);
     }
   ).gc('inner');
 
@@ -113,7 +131,7 @@ summary(() => {
     "pg (brianc/node-postgres)",
     async () => {
       const results = await pgVanilla.query(pgQuery);
-      return do_not_optimize(results.rows);
+      return consume(results.rows);
     }
   ).gc('inner');
 
@@ -127,7 +145,7 @@ summary(() => {
       ${null} as null, 
       ${false} as boolean
       FROM generate_series(1,5)`;
-      return do_not_optimize(results);
+      return consume(results);
     }
   ).gc('inner');
 });

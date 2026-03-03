@@ -8,14 +8,15 @@ services:
       dockerfile: Dockerfile
     
     volumes:
-      - .:/home/node/app:cached
       - /home/node/app/node_modules
+      - pg_socket:/var/run/postgresql
 
     environment:
       PGPASSWORD: pass
       PGUSER: user
       PGDATABASE: data
       PGHOST: db
+      PGSOCKET: /var/run/postgresql
       PGPORT: 5432
       PGMAX: 10
       # set this to true in the development environment until I can get SSL setup on the 
@@ -49,3 +50,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - pg_socket:/var/run/postgresql
+
+volumes:
+  pg_socket:
+    driver: local
