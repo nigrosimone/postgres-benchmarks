@@ -10,8 +10,6 @@ Dependencies:
 - [pg-native (brianc/node-postgres)](https://www.npmjs.com/package/pg-native)
 - [postgres (porsager/postgres)](https://www.npmjs.com/package/postgres)
 
-TL;DR: pg-native wins
-
 ### Fair benchmark
 
 - All libraries execute queries using prepared statements (see [Prepared statement](https://en.wikipedia.org/wiki/Prepared_statement))
