@@ -32,7 +32,7 @@ FROM generate_series(1,1000)
 The values:
 
 ```js
-[1337, "wat", new Date().toISOString(), null, false]
+[1337, "wat", new Date(), null, false]
 ```
 
 ### Run benchmark
