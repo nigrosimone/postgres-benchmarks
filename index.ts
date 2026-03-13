@@ -127,6 +127,8 @@ const consume = (rows: any) => {
 const bench = new Bench({
   name: 'postgres-benchmarks',
   iterations: 5_000,
+  warmupTime: 1000,
+  time: 5000,
   setup: (_task, mode) => {
     // Run the garbage collector before warmup at each cycle
     if (mode === 'warmup' && typeof globalThis.gc === 'function') {
