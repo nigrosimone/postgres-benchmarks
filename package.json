@@ -11,7 +11,7 @@
     "docker-build": "docker-compose build",
     "docker-up": "docker-compose up"
   },
-  "author": "",
+  "author": "Simone Nigro",
   "license": "ISC",
   "dependencies": {
     "tinybench": "latest",

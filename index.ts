@@ -61,10 +61,14 @@ if (!process.env.PGMAX) {
   process.exit(1);
 }
 
+const host = socketPath ?? process.env.PGHOST;
+const max = +process.env.PGMAX;
+const port = +(process.env.PGPORT ?? 5432);
+
 const pgConfig: PoolConfig = {
-  max: +process.env.PGMAX,
-  host: socketPath ?? process.env.PGHOST,
-  port: +(process.env.PGPORT ?? 5432),
+  max,
+  host,
+  port,
   database: process.env.PGDATABASE,
   user: process.env.PGUSER,
   password: process.env.PGPASSWORD,
@@ -75,9 +79,9 @@ const pgNative = new native.Pool(pgConfig);
 const pgVanilla = new pg.Pool(pgConfig);
 
 const sqlPrepared = postgres({
-  max: +process.env.PGMAX,
-  host: socketPath ?? process.env.PGHOST,
-  port: +(process.env.PGPORT ?? 5432),
+  max,
+  host,
+  port,
   database: process.env.PGDATABASE,
   username: process.env.PGUSER,
   password: process.env.PGPASSWORD,
