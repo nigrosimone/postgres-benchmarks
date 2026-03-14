@@ -216,7 +216,7 @@ try {
     `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
   );
   for (const benchmark of benchmarks) {
-    console.log('\n\n');
+    console.log('\n');
     if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
     const bench = benchmark();
     await bench.run();
