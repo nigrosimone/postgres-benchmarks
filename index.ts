@@ -129,12 +129,21 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'select 1'
+      name: 'generate_series(1)'
     });
 
+    const dateNow = new Date();
+
     const pgQuery: QueryConfig = {
-      text: `select 1`,
-      name: "simple", // Creation of prepared statements
+      text: `select
+      $1::int as int,
+      $2 as string,
+      $3::timestamp with time zone as timestamp,
+      $4 as null,
+      $5::bool as boolean
+      FROM generate_series(1,1)`,
+      name: "generate_series", // Creation of prepared statements
+      values: [1337, "wat", dateNow, null, false],
     };
 
     bench
@@ -155,7 +164,13 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "postgres (porsager/postgres)",
         async () => {
-          const results = await sqlPrepared`select 1`;
+          const results = await sqlPrepared`select 
+            ${1337}::int as int, 
+            ${"wat"} as string, 
+            ${dateNow}::timestamp with time zone as timestamp, 
+            ${null} as null, 
+            ${false}::bool as boolean
+            FROM generate_series(1,1)`;
           return consume(results);
         }
       );
