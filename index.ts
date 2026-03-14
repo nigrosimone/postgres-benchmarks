@@ -164,6 +164,56 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
+      name: 'generate_series(100)'
+    });
+
+    const dateNow = new Date();
+
+    const pgQuery: QueryConfig = {
+      text: `select
+      $1::int as int,
+      $2 as string,
+      $3::timestamp with time zone as timestamp,
+      $4 as null,
+      $5::bool as boolean
+      FROM generate_series(1,100)`,
+      name: "generate_series", // Creation of prepared statements
+      values: [1337, "wat", dateNow, null, false],
+    };
+
+    bench
+      .add(
+        "pg-native (brianc/node-postgres)",
+        async () => {
+          const results = await pgNative.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "pg (brianc/node-postgres)",
+        async () => {
+          const results = await pgVanilla.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "postgres (porsager/postgres)",
+        async () => {
+          const results = await sqlPrepared`select 
+            ${1337}::int as int, 
+            ${"wat"} as string, 
+            ${dateNow}::timestamp with time zone as timestamp, 
+            ${null} as null, 
+            ${false}::bool as boolean
+            FROM generate_series(1,100)`;
+          return consume(results);
+        }
+      );
+    return bench;
+  },
+  () => {
+    const bench = new Bench({
+      ...benchOption,
       name: 'generate_series(500)'
     });
 
