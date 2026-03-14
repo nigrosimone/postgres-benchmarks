@@ -102,12 +102,14 @@ try {
 
 const consume = (rows: any) => {
   const len = rows.length;
-  const results = new Array(len).fill({});
+  const results = new Array(len);
   for (let i = 0; i < len; i++) {
     const row = rows[i];
-    for(const key in row){
-      results[i][key] = row[key];
+    const out: any = {};
+    for (const key in row) {
+      out[key] = row[key];
     }
+    results[i] = out;
   }
   (globalThis as any).__do_not_optimize = results;
   return (globalThis as any).__do_not_optimize;
@@ -125,14 +127,14 @@ const benchOption: BenchOptions = {
   },
 }
 
+const dateNow = new Date();
+
 const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
       name: 'generate_series(1)'
     });
-
-    const dateNow = new Date();
 
     const pgQuery: QueryConfig = {
       text: `select
@@ -142,7 +144,7 @@ const benchmarks: Array<() => Bench> = [
       $4 as null,
       $5::bool as boolean
       FROM generate_series(1,1)`,
-      name: "generate_series", // Creation of prepared statements
+      name: "generate_series_1", // Creation of prepared statements
       values: [1337, "wat", dateNow, null, false],
     };
 
@@ -182,8 +184,6 @@ const benchmarks: Array<() => Bench> = [
       name: 'generate_series(100)'
     });
 
-    const dateNow = new Date();
-
     const pgQuery: QueryConfig = {
       text: `select
       $1::int as int,
@@ -192,7 +192,7 @@ const benchmarks: Array<() => Bench> = [
       $4 as null,
       $5::bool as boolean
       FROM generate_series(1,100)`,
-      name: "generate_series", // Creation of prepared statements
+      name: "generate_series_100", // Creation of prepared statements
       values: [1337, "wat", dateNow, null, false],
     };
 
@@ -232,8 +232,6 @@ const benchmarks: Array<() => Bench> = [
       name: 'generate_series(500)'
     });
 
-    const dateNow = new Date();
-
     const pgQuery: QueryConfig = {
       text: `select
       $1::int as int,
@@ -242,7 +240,7 @@ const benchmarks: Array<() => Bench> = [
       $4 as null,
       $5::bool as boolean
       FROM generate_series(1,500)`,
-      name: "generate_series", // Creation of prepared statements
+      name: "generate_series_500", // Creation of prepared statements
       values: [1337, "wat", dateNow, null, false],
     };
 
