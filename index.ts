@@ -1,4 +1,4 @@
-import { Bench } from "tinybench";
+import { Bench, type BenchOptions } from "tinybench";
 import pg, { type QueryConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
@@ -100,20 +100,6 @@ try {
   process.exit(1);
 }
 
-const dateNow = new Date();
-
-const pgQuery: QueryConfig = {
-  text: `select
-      $1::int as int,
-      $2 as string,
-      $3::timestamp with time zone as timestamp,
-      $4 as null,
-      $5::bool as boolean
-      FROM generate_series(1,500)`,
-  name: "pg", // Creation of prepared statements
-  values: [1337, "wat", dateNow, null, false],
-};
-
 const consume = (rows: any) => {
   const len = rows.length;
   const results = new Array(len);
@@ -124,8 +110,7 @@ const consume = (rows: any) => {
   return (globalThis as any).__do_not_optimize;
 }
 
-const bench = new Bench({
-  name: 'postgres-benchmarks',
+const benchOption: BenchOptions = {
   iterations: 5_000,
   warmupTime: 1000,
   time: 5000,
@@ -135,45 +120,109 @@ const bench = new Bench({
       globalThis.gc()
     }
   },
-});
+}
 
-bench
-  .add(
-    "pg-native (brianc/node-postgres)",
-    async () => {
-      const results = await pgNative.query(pgQuery);
-      return consume(results.rows);
-    }
-  )
-  .add(
-    "pg (brianc/node-postgres)",
-    async () => {
-      const results = await pgVanilla.query(pgQuery);
-      return consume(results.rows);
-    }
-  )
-  .add(
-    "postgres (porsager/postgres)",
-    async () => {
-      const results = await sqlPrepared`select 
-      ${1337}::int as int, 
-      ${"wat"} as string, 
-      ${dateNow}::timestamp with time zone as timestamp, 
-      ${null} as null, 
-      ${false}::bool as boolean
-      FROM generate_series(1,500)`;
-      return consume(results);
-    }
-  );
+const benchmarks: Array<() => Bench> = [
+  () => {
+    const bench = new Bench({
+      ...benchOption,
+      name: 'simple'
+    });
+
+    const pgQuery: QueryConfig = {
+      text: `select 1`,
+      name: "simple", // Creation of prepared statements
+    };
+
+    bench
+      .add(
+        "pg-native (brianc/node-postgres)",
+        async () => {
+          const results = await pgNative.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "pg (brianc/node-postgres)",
+        async () => {
+          const results = await pgVanilla.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "postgres (porsager/postgres)",
+        async () => {
+          const results = await sqlPrepared`select 1`;
+          return consume(results);
+        }
+      );
+    return bench;
+  },
+  () => {
+    const bench = new Bench({
+      ...benchOption,
+      name: 'generate_series'
+    });
+
+    const dateNow = new Date();
+
+    const pgQuery: QueryConfig = {
+      text: `select
+      $1::int as int,
+      $2 as string,
+      $3::timestamp with time zone as timestamp,
+      $4 as null,
+      $5::bool as boolean
+      FROM generate_series(1,500)`,
+      name: "generate_series", // Creation of prepared statements
+      values: [1337, "wat", dateNow, null, false],
+    };
+
+    bench
+      .add(
+        "pg-native (brianc/node-postgres)",
+        async () => {
+          const results = await pgNative.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "pg (brianc/node-postgres)",
+        async () => {
+          const results = await pgVanilla.query(pgQuery);
+          return consume(results.rows);
+        }
+      )
+      .add(
+        "postgres (porsager/postgres)",
+        async () => {
+          const results = await sqlPrepared`select 
+            ${1337}::int as int, 
+            ${"wat"} as string, 
+            ${dateNow}::timestamp with time zone as timestamp, 
+            ${null} as null, 
+            ${false}::bool as boolean
+            FROM generate_series(1,500)`;
+          return consume(results);
+        }
+      );
+    return bench;
+  }
+];
 
 // Run the benchmark and print results
 try {
-  if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
-  await bench.run();
   console.log(
     `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
   );
-  console.table(bench.table());
+  for (const benchmark of benchmarks) {
+    console.log('\n\n');
+    if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
+    const bench = benchmark();
+    await bench.run();
+    console.log(bench.name);
+    console.table(bench.table());
+  }
 } catch (err) {
   console.error('Benchmark run failed:', err);
   process.exit(1);
