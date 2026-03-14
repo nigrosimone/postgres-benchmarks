@@ -126,7 +126,7 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'simple'
+      name: 'select 1'
     });
 
     const pgQuery: QueryConfig = {
@@ -161,7 +161,7 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'generate_series'
+      name: 'generate_series(500)'
     });
 
     const dateNow = new Date();
