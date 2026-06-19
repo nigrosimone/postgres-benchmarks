@@ -2,7 +2,18 @@
   "name": "postgres-benchmarks",
   "version": "1.0.0",
   "description": "A benchmark focusing on the performance of Postgres client libraries for Node.js, brianc/node-postgres VS porsager/postgres",
-  "keywords": ["nodejs", "javascript", "benchmark", "postgresql", "node-js", "pg", "postgres", "pg-native", "node", "postgres.js"],
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "benchmark",
+    "postgresql",
+    "node-js",
+    "pg",
+    "postgres",
+    "pg-native",
+    "node",
+    "postgres.js"
+  ],
   "type": "module",
   "main": "index.ts",
   "scripts": {
@@ -14,16 +25,19 @@
   "author": "Simone Nigro",
   "license": "ISC",
   "dependencies": {
-    "tinybench": "latest",
-    "pg": "latest",
-    "pg-native": "latest",
-    "postgres": "latest"
+    "tinybench": "6.0.2",
+    "pg": "8.22.0",
+    "pg-native": "3.8.0",
+    "postgres": "3.4.9"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/pg": "latest"
+    "@types/node": "25.9.3",
+    "@types/pg": "8.20.0"
   },
   "engines": {
     "node": ">=24.0.0"
+  },
+  "allowScripts": {
+    "libpq": true
   }
 }
