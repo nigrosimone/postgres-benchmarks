@@ -118,10 +118,10 @@ const benchOption: BenchOptions = {
   iterations: 5_000,
   warmupTime: 1000,
   time: 5000,
-  setup: (_task, mode) => {
+  setup: () => {
     (globalThis as any).__do_not_optimize = undefined;
-    // Run the garbage collector before warmup at each cycle
-    if (mode === 'warmup' && typeof globalThis.gc === 'function') {
+    // Run the garbage collector at each cycle
+    if (typeof globalThis.gc === 'function') {
       globalThis.gc()
     }
   },
