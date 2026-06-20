@@ -107,7 +107,6 @@ const consume = (rows: any[]) => {
     const r = rows[i];
     sum += r.int;
     sum += r.string.length;
-    sum += r.timestamp.getTime();
     sum += r.null ?? 0;
     sum += r.boolean ? 1 : 0;
   }
@@ -128,8 +127,6 @@ const benchOption: BenchOptions = {
   },
 }
 
-const dateNow = new Date();
-
 const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
@@ -141,12 +138,11 @@ const benchmarks: Array<() => Bench> = [
       text: `select
       $1::int as int,
       $2 as string,
-      $3::timestamp with time zone as timestamp,
-      $4 as null,
-      $5::bool as boolean
+      $3 as null,
+      $4::bool as boolean
       FROM generate_series(1,1)`,
       name: "generate_series_1", // Creation of prepared statements
-      values: [1337, "wat", dateNow, null, false],
+      values: [1337, "wat", null, false],
     };
 
     bench
@@ -170,7 +166,6 @@ const benchmarks: Array<() => Bench> = [
           const results = await sqlPrepared`select 
             ${1337}::int as int, 
             ${"wat"} as string, 
-            ${dateNow}::timestamp with time zone as timestamp, 
             ${null} as null, 
             ${false}::bool as boolean
             FROM generate_series(1,1)`;
@@ -189,12 +184,11 @@ const benchmarks: Array<() => Bench> = [
       text: `select
       $1::int as int,
       $2 as string,
-      $3::timestamp with time zone as timestamp,
-      $4 as null,
-      $5::bool as boolean
+      $3 as null,
+      $4::bool as boolean
       FROM generate_series(1,100)`,
       name: "generate_series_100", // Creation of prepared statements
-      values: [1337, "wat", dateNow, null, false],
+      values: [1337, "wat", null, false],
     };
 
     bench
@@ -217,8 +211,7 @@ const benchmarks: Array<() => Bench> = [
         async () => {
           const results = await sqlPrepared`select 
             ${1337}::int as int, 
-            ${"wat"} as string, 
-            ${dateNow}::timestamp with time zone as timestamp, 
+            ${"wat"} as string,  
             ${null} as null, 
             ${false}::bool as boolean
             FROM generate_series(1,100)`;
@@ -237,12 +230,11 @@ const benchmarks: Array<() => Bench> = [
       text: `select
       $1::int as int,
       $2 as string,
-      $3::timestamp with time zone as timestamp,
-      $4 as null,
-      $5::bool as boolean
+      $3 as null,
+      $4::bool as boolean
       FROM generate_series(1,500)`,
       name: "generate_series_500", // Creation of prepared statements
-      values: [1337, "wat", dateNow, null, false],
+      values: [1337, "wat", null, false],
     };
 
     bench
@@ -266,7 +258,6 @@ const benchmarks: Array<() => Bench> = [
           const results = await sqlPrepared`select 
             ${1337}::int as int, 
             ${"wat"} as string, 
-            ${dateNow}::timestamp with time zone as timestamp, 
             ${null} as null, 
             ${false}::bool as boolean
             FROM generate_series(1,500)`;

@@ -25,10 +25,11 @@
   "author": "Simone Nigro",
   "license": "ISC",
   "dependencies": {
-    "tinybench": "6.0.2",
+    "@sixfold/fast-postgres-date-parser": "^0.0.6",
     "pg": "8.22.0",
     "pg-native": "3.8.0",
-    "postgres": "3.4.9"
+    "postgres": "3.4.9",
+    "tinybench": "6.0.2"
   },
   "devDependencies": {
     "@types/node": "25.9.3",

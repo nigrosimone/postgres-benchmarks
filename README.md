@@ -21,16 +21,15 @@ The query:
 SELECT
   $1::int as int,
   $2 as string,
-  $3::timestamp with time zone as timestamp,
-  $4 as null,
-  $5::bool as boolean
+  $3 as null,
+  $4::bool as boolean
 FROM generate_series(1,1000)
 ```
 
 The values:
 
 ```js
-[1337, "wat", new Date(), null, false]
+[1337, "wat", null, false]
 ```
 
 ### Run benchmark
