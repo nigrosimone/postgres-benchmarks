@@ -100,12 +100,12 @@ try {
   process.exit(1);
 }
 
-const consume = (rows: any) => {
+const consume = (rows: any[]) => {
   const len = rows.length;
   const results = new Array(len);
   for (let i = 0; i < len; i++) {
     const row = rows[i];
-    const out: any = {};
+    const out: Record<string, unknown> = {};
     for (const key in row) {
       out[key] = row[key];
     }
@@ -295,4 +295,5 @@ try {
   process.exit(1);
 } finally {
   await Promise.all([pgNative.end(), pgVanilla.end(), sqlPrepared.end()]);
+  process.exit(0);
 }
