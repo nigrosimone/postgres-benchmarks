@@ -101,18 +101,18 @@ try {
 }
 
 const consume = (rows: any[]) => {
+  let sum = 0;
   const len = rows.length;
-  const results = new Array(len);
   for (let i = 0; i < len; i++) {
-    const row = rows[i];
-    const out: Record<string, unknown> = {};
-    for (const key in row) {
-      out[key] = row[key];
-    }
-    results[i] = out;
+    const r = rows[i];
+    sum += r.int;
+    sum += r.string.length;
+    sum += r.timestamp.getTime();
+    sum += r.null ?? 0;
+    sum += r.boolean ? 1 : 0;
   }
-  (globalThis as any).__do_not_optimize = results;
-  return (globalThis as any).__do_not_optimize;
+  (globalThis as any).__do_not_optimize = sum;
+  return sum;
 }
 
 const benchOption: BenchOptions = {
