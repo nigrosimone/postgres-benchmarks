@@ -279,7 +279,19 @@ try {
     const bench = benchmark();
     await bench.run();
     console.log(bench.name);
-    console.table(bench.table());
+    const table = bench.table();
+
+    const fastest = table.reduce((best, row) => {
+      const avg = Number((row?.["Latency avg (ns)"] as string)?.split(" ")[0]);
+      return !best || avg < Number(best.avg)
+        ? { name: row?.["Task name"], avg }
+        : best;
+    }, null as null | { name: string; avg: number });
+
+    console.log(bench.name);
+    console.table(table);
+
+    console.log(`🏆 Winner: ${fastest?.name} (${(fastest?.avg as number)?.toFixed(0)} ns)`);
   }
 } catch (err) {
   console.error('Benchmark run failed:', err);
