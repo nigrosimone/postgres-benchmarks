@@ -15,6 +15,8 @@ WORKDIR /home/node/app
 COPY package*.json ./
 USER node
 
+ENV NODE_DISABLE_COLORS=1
+
 RUN npm ci --only=production
 
 COPY --chown=node:node . .

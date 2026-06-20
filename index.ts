@@ -288,7 +288,6 @@ try {
         : best;
     }, null as null | { name: string; avg: number });
 
-    console.log(bench.name);
     console.table(table);
 
     console.log(`🏆 Winner: ${fastest?.name} (${(fastest?.avg as number)?.toFixed(0)} ns)`);
