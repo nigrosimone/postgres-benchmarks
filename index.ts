@@ -75,8 +75,10 @@ const pgConfig: PoolConfig = {
 };
 
 const pgNative = new native.Pool(pgConfig);
+const pgNativeQuery = pgNative.query.bind(pgNative);
 
 const pgVanilla = new pg.Pool(pgConfig);
+const pgVanillaQuery = pgVanilla.query.bind(pgVanilla);
 
 const sqlPrepared = postgres({
   max,
@@ -90,8 +92,8 @@ const sqlPrepared = postgres({
 
 try {
   await Promise.all([
-    pgNative.query("SELECT 1"),
-    pgVanilla.query("SELECT 1"),
+    pgNativeQuery("SELECT 1"),
+    pgVanillaQuery("SELECT 1"),
     sqlPrepared`SELECT 1`,
   ]);
   console.log("Database connectivity verified through: " + (socketPath ? `socket at ${socketPath}` : `host ${process.env.PGHOST}:${process.env.PGPORT}`));
@@ -149,14 +151,14 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "pg-native (brianc/node-postgres)",
         async () => {
-          const results = await pgNative.query(pgQuery);
+          const results = await pgNativeQuery(pgQuery);
           return consume(results.rows);
         }
       )
       .add(
         "pg (brianc/node-postgres)",
         async () => {
-          const results = await pgVanilla.query(pgQuery);
+          const results = await pgVanillaQuery(pgQuery);
           return consume(results.rows);
         }
       )
@@ -195,14 +197,14 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "pg-native (brianc/node-postgres)",
         async () => {
-          const results = await pgNative.query(pgQuery);
+          const results = await pgNativeQuery(pgQuery);
           return consume(results.rows);
         }
       )
       .add(
         "pg (brianc/node-postgres)",
         async () => {
-          const results = await pgVanilla.query(pgQuery);
+          const results = await pgVanillaQuery(pgQuery);
           return consume(results.rows);
         }
       )
@@ -241,14 +243,14 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "pg-native (brianc/node-postgres)",
         async () => {
-          const results = await pgNative.query(pgQuery);
+          const results = await pgNativeQuery(pgQuery);
           return consume(results.rows);
         }
       )
       .add(
         "pg (brianc/node-postgres)",
         async () => {
-          const results = await pgVanilla.query(pgQuery);
+          const results = await pgVanillaQuery(pgQuery);
           return consume(results.rows);
         }
       )
