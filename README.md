@@ -25,9 +25,13 @@ The benchmark measures:
 - PostgreSQL is accessed through a Unix domain socket to reduce TCP overhead
 
 The database contains a pre-populated table with 500 rows.
-Benchmark queries only read existing rows using `LIMIT 1`, `LIMIT 100` and `LIMIT 500`.
+Benchmark queries only read existing rows using `LIMIT 1`, `LIMIT 100` and `LIMIT 500`, eg.:
 
-The data preparation:
+```sql
+SELECT * FROM benchmark_rows ORDER BY id LIMIT 1
+```
+
+The data preparation of `benchmark_rows`:
 
 ```sql
 CREATE TABLE IF NOT EXISTS benchmark_rows (
@@ -41,13 +45,13 @@ CREATE TABLE IF NOT EXISTS benchmark_rows (
 TRUNCATE benchmark_rows;
 
 INSERT INTO benchmark_rows (id, int_value, string_value, null_value, bool_value)
-    SELECT
-      i,
-      1337,
-      'wat',
-      NULL,
-      false
-    FROM generate_series(1, 500) i;
+  SELECT
+    i,
+    1337,
+    'wat',
+    NULL,
+    false
+  FROM generate_series(1, 500) i;
 ```
 
 ### Run benchmark
