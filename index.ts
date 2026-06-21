@@ -141,6 +141,7 @@ const consume = (rows: any[]) => {
     sum += r.bool_value ? 1 : 0;
   }
   (globalThis as any).__do_not_optimize = sum;
+  if (1340 * len !== sum) throw new Error(`Unexpected sum: ${sum} for ${len} rows`);
   return sum;
 }
 
