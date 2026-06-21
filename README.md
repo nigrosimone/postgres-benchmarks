@@ -20,7 +20,7 @@ The benchmark measures:
 ### Fair benchmark
 
 - All libraries execute queries using prepared statements (see [Prepared statement](https://en.wikipedia.org/wiki/Prepared_statement))
-- The garbage collector is exposed and triggered after each library benchmark (see [tinybench](https://www.npmjs.com/package/tinybench))
+- The garbage collector is exposed and triggered before the warmup of each task (see [tinybench](https://www.npmjs.com/package/tinybench))
 - Queries are warmed up before measurements
 - PostgreSQL is accessed through a Unix domain socket to reduce TCP overhead
 
