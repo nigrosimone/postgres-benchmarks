@@ -39,4 +39,4 @@ jobs:
 
       - name: Run benchmark
         run: |
-          docker exec $(docker ps -qf "name=web") node --expose-gc --allow-natives-syntax index.ts --iterations=50000
+          docker exec $(docker ps -qf "name=web") node --expose-gc index.ts
