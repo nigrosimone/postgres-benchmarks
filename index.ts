@@ -105,7 +105,8 @@ try {
 
 // Data preparation
 const conn = await pgNative.connect();
-await conn.query(`CREATE TABLE IF NOT EXISTS benchmark_rows (
+try {
+  await conn.query(`CREATE TABLE IF NOT EXISTS benchmark_rows (
   id int PRIMARY KEY,
   int_value int,
   string_value text,
@@ -123,12 +124,13 @@ INSERT INTO benchmark_rows (id, int_value, string_value, null_value, bool_value)
       NULL,
       false
     FROM generate_series(1, 500) i;`);
-const result = await conn.query(
-  `SELECT COUNT(*)::int AS count FROM benchmark_rows`
-);
-await conn.release();
-
-assert.equal(result.rows[0].count, 500, `Expected 500 rows in benchmark_rows, but got ${result.rows[0].count}`);
+  const result = await conn.query(
+    `SELECT COUNT(*)::int AS count FROM benchmark_rows`
+  );
+  assert.equal(result.rows[0].count, 500, `Expected 500 rows in benchmark_rows, but got ${result.rows[0].count}`);
+} finally {
+  await conn.release();
+}
 
 const consume = (rows: any[]) => {
   let sum = 0;
