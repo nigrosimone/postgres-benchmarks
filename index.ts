@@ -3,6 +3,7 @@ import pg, { type QueryConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 import os from "node:os";
+import assert from "node:assert";
 
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
@@ -102,15 +103,42 @@ try {
   process.exit(1);
 }
 
+// Data preparation
+const conn = await pgNative.connect();
+await conn.query(`CREATE TABLE IF NOT EXISTS benchmark_rows (
+  id int PRIMARY KEY,
+  int_value int,
+  string_value text,
+  null_value text,
+  bool_value boolean
+);
+
+TRUNCATE benchmark_rows;
+
+INSERT INTO benchmark_rows (id, int_value, string_value, null_value, bool_value)
+    SELECT
+      i,
+      1337,
+      'wat',
+      NULL,
+      false
+    FROM generate_series(1, 500) i;`);
+const result = await conn.query(
+  `SELECT COUNT(*)::int AS count FROM benchmark_rows`
+);
+await conn.release();
+
+assert.equal(result.rows[0].count, 500, `Expected 500 rows in benchmark_rows, but got ${result.rows[0].count}`);
+
 const consume = (rows: any[]) => {
   let sum = 0;
   const len = rows.length;
   for (let i = 0; i < len; i++) {
     const r = rows[i];
-    sum += r.int;
-    sum += r.string.length;
-    sum += r.null ?? 0;
-    sum += r.boolean ? 1 : 0;
+    sum += r.int_value;
+    sum += r.string_value.length;
+    sum += r.null_value ?? 0;
+    sum += r.bool_value ? 1 : 0;
   }
   (globalThis as any).__do_not_optimize = sum;
   return sum;
@@ -133,18 +161,12 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'generate_series(1)'
+      name: 'query_1'
     });
 
     const pgQuery: QueryConfig = {
-      text: `select
-      $1::int as int,
-      $2 as string,
-      $3 as null,
-      $4::bool as boolean
-      FROM generate_series(1,1)`,
-      name: "generate_series_1", // Creation of prepared statements
-      values: [1337, "wat", null, false],
+      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 1`,
+      name: "query_1", // Creation of prepared statements
     };
 
     bench
@@ -165,12 +187,7 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "postgres (porsager/postgres)",
         async () => {
-          const results = await sqlPrepared`select 
-            ${1337}::int as int, 
-            ${"wat"} as string, 
-            ${null} as null, 
-            ${false}::bool as boolean
-            FROM generate_series(1,1)`;
+          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 1`;
           return consume(results);
         }
       );
@@ -179,18 +196,12 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'generate_series(100)'
+      name: 'query_100'
     });
 
     const pgQuery: QueryConfig = {
-      text: `select
-      $1::int as int,
-      $2 as string,
-      $3 as null,
-      $4::bool as boolean
-      FROM generate_series(1,100)`,
-      name: "generate_series_100", // Creation of prepared statements
-      values: [1337, "wat", null, false],
+      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 100`,
+      name: "query_100", // Creation of prepared statements
     };
 
     bench
@@ -211,12 +222,7 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "postgres (porsager/postgres)",
         async () => {
-          const results = await sqlPrepared`select 
-            ${1337}::int as int, 
-            ${"wat"} as string,  
-            ${null} as null, 
-            ${false}::bool as boolean
-            FROM generate_series(1,100)`;
+          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 100`;
           return consume(results);
         }
       );
@@ -225,18 +231,12 @@ const benchmarks: Array<() => Bench> = [
   () => {
     const bench = new Bench({
       ...benchOption,
-      name: 'generate_series(500)'
+      name: 'query_500'
     });
 
     const pgQuery: QueryConfig = {
-      text: `select
-      $1::int as int,
-      $2 as string,
-      $3 as null,
-      $4::bool as boolean
-      FROM generate_series(1,500)`,
-      name: "generate_series_500", // Creation of prepared statements
-      values: [1337, "wat", null, false],
+      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 500`,
+      name: "query_500", // Creation of prepared statements
     };
 
     bench
@@ -257,12 +257,7 @@ const benchmarks: Array<() => Bench> = [
       .add(
         "postgres (porsager/postgres)",
         async () => {
-          const results = await sqlPrepared`select 
-            ${1337}::int as int, 
-            ${"wat"} as string, 
-            ${null} as null, 
-            ${false}::bool as boolean
-            FROM generate_series(1,500)`;
+          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 500`;
           return consume(results);
         }
       );
