@@ -23,7 +23,7 @@ The benchmark measures:
 - The garbage collector is exposed and triggered before the warmup of each task (see [tinybench](https://www.npmjs.com/package/tinybench))
 - Queries are warmed up before measurements
 - PostgreSQL is accessed through a Unix domain socket to reduce TCP overhead
-- `postgres` (porsager/postgres) supports PostgreSQL pipeline mode and uses it internally for query execution, `pg` (brianc/node-postgres) does not currently support PostgreSQL pipeline mode. This benchmark executes one query at a time (no concurrent query batching), so pipeline mode benefits are expected to be limited.
+- `postgres` (porsager/postgres) supports [PostgreSQL pipeline mode](https://www.postgresql.org/docs/current/libpq-pipeline-mode.html) and uses it internally for query execution, `pg` (brianc/node-postgres) does [not currently support PostgreSQL pipeline mode](https://github.com/brianc/node-postgres/pull/3652). This benchmark executes one query at a time (no concurrent query batching), so pipeline mode benefits are expected to be limited.
 
 The database contains a pre-populated table with 500 rows.
 Benchmark queries only read existing rows using `LIMIT 1`, `LIMIT 100` and `LIMIT 500`, eg.:
