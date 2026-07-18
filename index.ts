@@ -147,150 +147,147 @@ const consume = (rows: any[]) => {
   return sum;
 }
 
+// All permutations of the three client indices (3! = 6). 
+// Every query size is measured under EVERY order and the raw samples are pooled per client, 
+// so the execution order is fully removed. Deterministic (no RNG), so runs stay reproducible.
+const permute = <T>(arr: T[]): T[][] =>
+  arr.length <= 1
+    ? [arr]
+    : arr.flatMap((x, i) =>
+        permute([...arr.slice(0, i), ...arr.slice(i + 1)]).map((rest) => [x, ...rest])
+      );
+const ORDERS = permute([0, 1, 2]);
+
 const benchOption: BenchOptions = {
   iterations: 5_000,
-  warmupTime: 1000,
-  time: 5000,
-  setup: (_task, mode) => {
+  warmupTime: 500,
+  // Split the measurement budget across the permutations
+  time: Math.round(5000 / ORDERS.length),
+  retainSamples: true, // required so task.result.latency.samples is populated for pooling
+  setup: (_task, _mode) => {
     (globalThis as any).__do_not_optimize = undefined;
-    // Run the garbage collector before the warmup of each task
-    if (mode === 'warmup' && typeof globalThis.gc === 'function') {
+    // Run the garbage collector before BOTH the warmup and the measured run of each task
+    if (typeof globalThis.gc === 'function') {
       globalThis.gc()
     }
   },
 }
 
-const benchmarks: Array<() => Bench> = [
-  () => {
-    const bench = new Bench({
-      ...benchOption,
-      name: 'query_1'
-    });
+// The query sizes under test.
+const limits = [1, 100, 500] as const;
+type Limit = (typeof limits)[number];
 
+const porsagerQueries: Record<Limit, () => Promise<any>> = {
+  1: () => sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 1`,
+  100: () => sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 100`,
+  500: () => sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 500`,
+};
+
+const adders: Array<(bench: Bench, limit: Limit) => void> = [
+  (bench, limit) => {
     const pgQuery: QueryConfig = {
-      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 1`,
-      name: "query_1", // Creation of prepared statements
+      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT ${limit}`,
+      name: `query_${limit}`, // Creation of prepared statements
     };
-
-    bench
-      .add(
-        "pg-native (brianc/node-postgres)",
-        async () => {
-          const results = await pgNativeQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "pg (brianc/node-postgres)",
-        async () => {
-          const results = await pgVanillaQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "postgres (porsager/postgres)",
-        async () => {
-          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 1`;
-          return consume(results);
-        }
-      );
-    return bench;
+    bench.add("pg-native (brianc/node-postgres)", async () => {
+      const results = await pgNativeQuery(pgQuery);
+      return consume(results.rows);
+    });
   },
-  () => {
-    const bench = new Bench({
-      ...benchOption,
-      name: 'query_100'
-    });
-
+  (bench, limit) => {
     const pgQuery: QueryConfig = {
-      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 100`,
-      name: "query_100", // Creation of prepared statements
+      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT ${limit}`,
+      name: `query_${limit}`, // Creation of prepared statements
     };
-
-    bench
-      .add(
-        "pg-native (brianc/node-postgres)",
-        async () => {
-          const results = await pgNativeQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "pg (brianc/node-postgres)",
-        async () => {
-          const results = await pgVanillaQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "postgres (porsager/postgres)",
-        async () => {
-          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 100`;
-          return consume(results);
-        }
-      );
-    return bench;
+    bench.add("pg (brianc/node-postgres)", async () => {
+      const results = await pgVanillaQuery(pgQuery);
+      return consume(results.rows);
+    });
   },
-  () => {
-    const bench = new Bench({
-      ...benchOption,
-      name: 'query_500'
+  (bench, limit) => {
+    const query = porsagerQueries[limit];
+    bench.add("postgres (porsager/postgres)", async () => {
+      const results = await query();
+      return consume(results);
     });
-
-    const pgQuery: QueryConfig = {
-      text: `SELECT * FROM benchmark_rows ORDER BY id LIMIT 500`,
-      name: "query_500", // Creation of prepared statements
-    };
-
-    bench
-      .add(
-        "pg-native (brianc/node-postgres)",
-        async () => {
-          const results = await pgNativeQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "pg (brianc/node-postgres)",
-        async () => {
-          const results = await pgVanillaQuery(pgQuery);
-          return consume(results.rows);
-        }
-      )
-      .add(
-        "postgres (porsager/postgres)",
-        async () => {
-          const results = await sqlPrepared`SELECT * FROM benchmark_rows ORDER BY id LIMIT 500`;
-          return consume(results);
-        }
-      );
-    return bench;
-  }
+  },
 ];
+
+// Nearest-rank percentile over an already-sorted sample array.
+const percentile = (sorted: number[], p: number) =>
+  sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil(p * sorted.length) - 1))] ?? NaN;
+
+const summarize = (samplesMs: number[]) => {
+  const n = samplesMs.length;
+  const sorted = [...samplesMs].sort((a, b) => a - b);
+  const mean = samplesMs.reduce((s, x) => s + x, 0) / n;
+  const variance = n > 1 ? samplesMs.reduce((s, x) => s + (x - mean) ** 2, 0) / (n - 1) : 0;
+  const moe = 1.96 * (Math.sqrt(variance) / Math.sqrt(n)); // 95% CI of the mean (z ≈ 1.96 for large n)
+  return {
+    samples: n,
+    meanNs: mean * 1e6,
+    medianNs: percentile(sorted, 0.5) * 1e6,
+    lo: (mean - moe) * 1e6, // lower bound of the mean's confidence interval (ns)
+    hi: (mean + moe) * 1e6, // upper bound of the mean's confidence interval (ns)
+    rmePct: mean > 0 ? (moe / mean) * 100 : 0,
+    opsPerSec: mean > 0 ? 1000 / mean : 0, // mean is ms/op
+  };
+};
 
 // Run the benchmark and print results
 try {
   console.log(
     `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
   );
-  for (const benchmark of benchmarks) {
+  for (const limit of limits) {
     console.log('\n');
-    if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
-    const bench = benchmark();
-    await bench.run();
-    console.log(bench.name);
-    const table = bench.table();
 
-    const fastest = table.reduce((best, row) => {
-      const avg = Number((row?.["Latency avg (ns)"] as string)?.split(" ")[0]);
-      return !best || avg < Number(best.avg)
-        ? { name: row?.["Task name"], avg }
-        : best;
-    }, null as null | { name: string; avg: number });
+    // Measure this query size under every execution order and pool the raw samples per client
+    const pooled = new Map<string, number[]>();
+    for (const order of ORDERS) {
+      if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
+      const bench = new Bench({ ...benchOption, name: `query_${limit}` });
+      for (const idx of order) adders[idx]?.(bench, limit);
+      await bench.run();
+      for (const task of bench.tasks) {
+        const samples = (task.result as any)?.latency?.samples as number[] | undefined;
+        if (!samples) continue;
+        const bucket = pooled.get(task.name) ?? [];
+        for (const s of samples) bucket.push(s);
+        pooled.set(task.name, bucket);
+      }
+    }
 
-    console.table(table);
+    console.log(`query_${limit} (pooled over ${ORDERS.length} execution orders)`);
 
-    console.log(`🏆 Winner: ${fastest?.name} (${(fastest?.avg as number)?.toFixed(0)} ns)`);
+    const rows = [...pooled.entries()]
+      .map(([name, samples]) => ({ name, ...summarize(samples) }))
+      .filter((r) => Number.isFinite(r.medianNs) && Number.isFinite(r.meanNs));
+
+    console.table(
+      rows.map((r) => ({
+        "Task name": r.name,
+        "Latency avg (ns)": `${r.meanNs.toFixed(0)} ± ${r.rmePct.toFixed(2)}%`,
+        "Latency med (ns)": r.medianNs.toFixed(0),
+        "Throughput avg (ops/s)": Math.round(r.opsPerSec),
+        Samples: r.samples,
+      }))
+    );
+
+    // Rank by median latency, but only crown a winner when the leader's mean confidence interval sits entirely
+    // below every rival's, i.e. the gap is statistically real, not noise.
+    const leader = [...rows].sort((a, b) => a.medianNs - b.medianNs)[0]; // fastest typical (p50) latency
+    const meanLeader = [...rows].sort((a, b) => a.meanNs - b.meanNs)[0]; // lowest mean latency
+    if (leader && meanLeader) {
+      const clearWinner = rows.every((r) => r.name === leader.name || leader.hi < r.lo);
+      if (clearWinner) {
+        console.log(`🏆 Winner: ${leader.name} (${leader.medianNs.toFixed(0)} ns median)`);
+      } else {
+        console.log(
+          `🤝 No clear winner within margin of error - lowest median: ${leader.name} (${leader.medianNs.toFixed(0)} ns); lowest mean: ${meanLeader.name} (${meanLeader.meanNs.toFixed(0)} ns)`
+        );
+      }
+    }
   }
 } catch (err) {
   console.error('Benchmark run failed:', err);
