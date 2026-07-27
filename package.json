@@ -28,7 +28,7 @@
     "pg": "^8.22.0",
     "pg-native": "^3.8.0",
     "postgres": "^3.4.9",
-    "tinybench": "^6.0.2"
+    "tinybench": "^6.1.2"
   },
   "devDependencies": {
     "@types/node": "^26.1.0",
