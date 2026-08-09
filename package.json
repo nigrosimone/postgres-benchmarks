@@ -35,7 +35,7 @@
     "@types/pg": "^8.21.0"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "allowScripts": {
     "libpq": true

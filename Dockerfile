@@ -1,5 +1,5 @@
 
-FROM node:24
+FROM node:26
 
 ENV DEBIAN_FRONTEND=noninteractive
 
