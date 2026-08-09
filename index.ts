@@ -18,6 +18,8 @@ console.log(JSON.stringify({
   pg: packages["node_modules/pg"]?.version,
   "pg-native": packages["node_modules/pg-native"]?.version,
   libpq: packages["node_modules/libpq"]?.version,
+  // Overridden: `pg` pins pg-types 2.2.0 (2019). See "Dependency override" in the README.
+  "pg-types": packages["node_modules/pg-types"]?.version,
   postgres: packages["node_modules/postgres"]?.version,
 }, null, 2));
 
