@@ -28,7 +28,7 @@
     "pg": "^8.23.0",
     "pg-native": "^3.9.0",
     "postgres": "^3.4.9",
-    "tinybench": "^6.1.2"
+    "tinybench": "^6.1.3"
   },
   "overrides": {
     "pg-types": "^4.1.0"
