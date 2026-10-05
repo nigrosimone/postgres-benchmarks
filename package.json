@@ -25,7 +25,7 @@
   "author": "Simone Nigro",
   "license": "ISC",
   "dependencies": {
-    "pg": "^8.23.0",
+    "pg": "^8.23.1",
     "pg-native": "^3.9.0",
     "postgres": "^3.4.9",
     "tinybench": "^6.2.0"
