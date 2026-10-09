@@ -2,6 +2,9 @@ services:
   web:
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+    # Node and Postgres on separate CPUs: when the scheduler puts them on the same one,
+    # latency jumps between two modes (e.g. 4 ms and 6 ms per pipelined batch)
+    cpuset: "0,1"
     build: 
       context: .
       dockerfile: Dockerfile
@@ -33,6 +36,7 @@ services:
 
   db:
     image: postgres:18-alpine
+    cpuset: "2,3"
     restart: unless-stopped
     ports: 
       - 5432:5432
