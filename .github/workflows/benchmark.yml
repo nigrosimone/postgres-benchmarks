@@ -15,7 +15,11 @@ permissions:
   contents: read
 
 jobs:
+  # Several runs in parallel: GitHub assigns the CPU at random and the ranking depends on it
   benchmark:
+    strategy:
+      matrix:
+        run: [1, 2, 3]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -27,32 +31,42 @@ jobs:
       - name: Run benchmark
         run: |
           set -o pipefail
-          docker compose run --rm -T web | tee benchmark.txt
-          { echo '```'; cat benchmark.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          mkdir -m 777 out
+          docker compose run --rm -T -v "$PWD/out:/home/node/app/out" -e BENCH_JSON=out/result.json web | tee out/benchmark.txt
 
       - uses: actions/upload-artifact@v7
         with:
-          name: benchmark
-          path: benchmark.txt
+          name: benchmark-${{ matrix.run }}
+          path: out/
 
   # Separate job so the write token is never exposed to the benchmarked packages
-  readme:
+  report:
     needs: benchmark
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
       - uses: actions/download-artifact@v8
         with:
-          name: benchmark
+          pattern: benchmark-*
+          path: runs
+
+      - name: Aggregate runs
+        run: |
+          node aggregate.ts runs/* > report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Update README output
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
-          awk -v f=benchmark.txt '
-            /<!-- benchmark:end -->/ { print "```shell"; while ((getline l < f) > 0) print l; print "```"; skip = 0 }
+          awk -v f=report.md '
+            /<!-- benchmark:end -->/ { while ((getline l < f) > 0) print l; skip = 0 }
             !skip { print }
             /<!-- benchmark:start -->/ { skip = 1 }
           ' README.md > README.tmp

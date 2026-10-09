@@ -126,6 +126,7 @@ the upgrade is wanted but blocked on breaking changes in date handling, unrelate
 - The winner is ranked by **median** latency (p50) and is only crowned when its median is lower than every rival's in **all 6 execution orders** (a sign test over 6 independent replicates, p = 1/64 per rival); otherwise the run is reported as having no clear winner. A confidence interval over the pooled samples is not used for this: consecutive samples are correlated, so it comes out far too narrow
 - Queries are warmed up before measurements
 - PostgreSQL is accessed through a Unix domain socket to reduce TCP overhead
+- Node.js and PostgreSQL are pinned to separate CPUs (`cpuset` in `docker-compose.yml`, so 4 CPUs are needed). Without it the scheduler sometimes puts both on the same CPU and the latency jumps between two modes, e.g. 4 ms and 6 ms per pipelined `LIMIT 500` batch, so the median changed from run to run
 - All libraries run with [PostgreSQL pipeline mode](https://www.postgresql.org/docs/current/libpq-pipeline-mode.html) enabled. `postgres` (porsager/postgres) has always pipelined internally; since `pg` 8.23.0 and `pg-native` 3.9.0 the same is available through the `pipeline: true` client option, so the previous asymmetry is gone and all three are compared on equal terms
 - Both budgets are expressed in **executed queries**, not iterations, so the two suites are constrained homogeneously despite one pipelined iteration resolving 10 queries
 - Because pipeline mode always uses the extended query protocol, every statement is sent individually (multi-statement scripts are rejected by the server in this mode)
@@ -170,8 +171,9 @@ docker-compose build
 docker-compose up
 ```
 
-On GitHub Actions: every push and pull request runs the benchmark with Docker Compose, the output is in the job summary.
-On `master` the CI also writes the output in the section below.
+On GitHub Actions: every push and pull request runs the benchmark with Docker Compose on 3 runners in parallel,
+and `aggregate.ts` combines the runs. The result is in the job summary, on `master` the CI also writes it in the
+section below.
 
 On Ubuntu/Debian:
 
@@ -185,7 +187,9 @@ npm run bench
 
 ### Output
 
-Last run on `master`, written by the CI on a GitHub-hosted runner:
+Last run on `master`, written by the CI. GitHub assigns the CPU of each runner at random and the ranking
+between the clients depends on it, so the benchmark runs on 3 runners and the ranking below combines them.
+The full output of each run is in the collapsed sections.
 
 <!-- benchmark:start -->
 ```shell
