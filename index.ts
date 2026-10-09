@@ -1,9 +1,10 @@
 import { Bench, type BenchOptions } from "tinybench";
 import pg, { type QueryConfig, type ClientConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import assert from "node:assert";
+import { printRanking, RANKING_LEGEND } from "./ranking.ts";
 
 console.log("Running benchmarks...", process.argv.slice(2).join(" "));
 console.log(
@@ -165,11 +166,12 @@ try {
     `SELECT COUNT(*)::int AS count FROM benchmark_rows`
   );
   assert.equal(result.rows[0].count, 500, `Expected 500 rows in benchmark_rows, but got ${result.rows[0].count}`);
-  const server = await conn.query(`SHOW server_version`);
-  console.log(`PostgreSQL server: ${server.rows[0]?.server_version}`);
 } finally {
   await conn.release();
 }
+
+const serverVersion: string = (await pgNativeQuery(`SHOW server_version`)).rows[0]?.server_version;
+console.log(`PostgreSQL server: ${serverVersion}`);
 
 const consume = (rows: any[]) => {
   let sum = 0;
@@ -418,67 +420,12 @@ const runSuite = async (
 
 type Group = Awaited<ReturnType<typeof runSuite>>;
 
-// Aggregate several groups into one ranking.
-//
-// Each client's median is normalized against the fastest median of its own group, which makes the
-// query sizes comparable (a `LIMIT 500` group is an order of magnitude slower than `LIMIT 1` and
-// would otherwise dominate any average). Those per-group ratios are combined with a GEOMETRIC mean:
-// for normalized numbers the arithmetic mean is not meaningful, since it would rank differently
-// depending on which client happened to be the baseline.
-const rankGroups = (groups: Group[]) => {
-  const names = [...new Set(groups.flatMap((g) => g.rows.map((r) => r.name)))];
-
-  return names
-    .map((name) => {
-      let logSum = 0;
-      let counted = 0;
-      let wins = 0;
-      let bestIn = 0;
-      for (const group of groups) {
-        const row = group.rows.find((r) => r.name === name);
-        if (!row) continue;
-        const best = Math.min(...group.rows.map((r) => r.medianNs));
-        logSum += Math.log(row.medianNs / best);
-        counted++;
-        if (row.medianNs === best) bestIn++;
-        if (group.winner === name) wins++;
-      }
-      return {
-        name,
-        // 1.00 = fastest everywhere; 1.15 = 15% slower than the group leader on average
-        score: counted > 0 ? Math.exp(logSum / counted) : NaN,
-        bestIn,
-        wins,
-        groups: counted,
-      };
-    })
-    .filter((r) => Number.isFinite(r.score))
-    .sort((a, b) => a.score - b.score);
-};
-
-const MEDALS = ["🥇", "🥈", "🥉"];
-
-const printRanking = (title: string, groups: Group[]) => {
-  if (groups.length === 0) return;
-  const ranked = rankGroups(groups);
-  console.log(`\n${title}`);
-  console.table(
-    ranked.map((r, i) => ({
-      "": MEDALS[i] ?? "  ",
-      "Task name": r.name,
-      // Geometric mean of per-group median latency, normalized to each group's leader
-      "Relative latency": r.score.toFixed(3),
-      "Slower than best": i === 0 ? "-" : `+${((r.score / ranked[0]!.score - 1) * 100).toFixed(1)}%`,
-      "Fastest median": `${r.bestIn}/${r.groups}`,
-      "Outright wins": `${r.wins}/${r.groups}`,
-    }))
-  );
-};
-
 // Run the benchmark and print results
 try {
+  const cpu = os.cpus()?.[0]?.model ?? 'unknown';
+  const cores = os.cpus()?.length ?? 0;
   console.log(
-    `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
+    `nodejs ${process.version}, CPU: ${cpu} Cores: ${cores}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
   );
   console.log(
     `Budget per query size and client: >=${BENCH_TIME_MS} ms split across ${ORDERS.length} execution orders, >=${BENCH_QUERIES} queries in each order`
@@ -503,17 +450,19 @@ try {
   }
 
   console.log(`\n\n=== Final ranking ===`);
-  console.log(
-    `Relative latency is the geometric mean of each client's median latency, normalized to the fastest\n` +
-    `client of every group: 1.000 means fastest everywhere, 1.100 means 10% slower than the group leader\n` +
-    `on average. "Outright wins" counts only the groups whose winner was statistically clear.`
-  );
+  console.log(RANKING_LEGEND);
   printRanking(`Sequential (${limits.length} groups)`, sequentialGroups);
   printRanking(`Pipelined x${BATCH} (${pipelinedGroups.length} groups)`, pipelinedGroups);
   printRanking(`Overall (${sequentialGroups.length + pipelinedGroups.length} groups)`, [
     ...sequentialGroups,
     ...pipelinedGroups,
   ]);
+
+  // Machine-readable result, used by aggregate.ts to combine several runs
+  if (process.env.BENCH_JSON) {
+    const result = { cpu, cores, node: process.version, server: serverVersion, batch: BATCH, sequential: sequentialGroups, pipelined: pipelinedGroups };
+    writeFileSync(process.env.BENCH_JSON, JSON.stringify(result, null, 2));
+  }
 } catch (err) {
   console.error('Benchmark run failed:', err);
   process.exit(1);

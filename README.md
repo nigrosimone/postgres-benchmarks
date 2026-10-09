@@ -170,8 +170,9 @@ docker-compose build
 docker-compose up
 ```
 
-On GitHub Actions: every push and pull request runs the benchmark with Docker Compose, the output is in the job summary.
-On `master` the CI also writes the output in the section below.
+On GitHub Actions: every push and pull request runs the benchmark with Docker Compose on 3 runners in parallel,
+and `aggregate.ts` combines the runs. The result is in the job summary, on `master` the CI also writes it in the
+section below.
 
 On Ubuntu/Debian:
 
@@ -185,7 +186,9 @@ npm run bench
 
 ### Output
 
-Last run on `master`, written by the CI on a GitHub-hosted runner:
+Last run on `master`, written by the CI. GitHub assigns the CPU of each runner at random and the ranking
+between the clients depends on it, so the benchmark runs on 3 runners and the ranking below combines them.
+The full output of each run is in the collapsed sections.
 
 <!-- benchmark:start -->
 ```shell
