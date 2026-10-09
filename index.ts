@@ -1,5 +1,5 @@
 import { Bench, type BenchOptions } from "tinybench";
-import pg, { type QueryConfig, type PoolConfig } from "pg";
+import pg, { type QueryConfig, type ClientConfig, type PoolConfig } from "pg";
 import postgres from "postgres";
 import { readFileSync } from "node:fs";
 import os from "node:os";
@@ -69,11 +69,8 @@ const host = socketPath ?? process.env.PGHOST;
 const max = +process.env.PGMAX;
 const port = +(process.env.PGPORT ?? 5432);
 
-// `pipeline` landed in pg 8.23.0 / pg-native 3.9.0 but is not in @types/pg 8.21.0 yet.
-type PipelinePoolConfig = PoolConfig & { pipeline?: boolean };
-
 // Connection settings shared by every client, in each library's own spelling.
-const pgConnection: PipelinePoolConfig = {
+const pgConnection: ClientConfig = {
   host,
   port,
   database: process.env.PGDATABASE,
@@ -95,7 +92,7 @@ const porsagerConnection = {
 };
 
 // --- Sequential variant: one query at a time, every client backed by a pool of `max` connections.
-const pgConfig: PipelinePoolConfig = { ...pgConnection, max };
+const pgConfig: PoolConfig = { ...pgConnection, max };
 
 const pgNative = new native.Pool(pgConfig);
 const pgNativeQuery = pgNative.query.bind(pgNative);
@@ -168,6 +165,8 @@ try {
     `SELECT COUNT(*)::int AS count FROM benchmark_rows`
   );
   assert.equal(result.rows[0].count, 500, `Expected 500 rows in benchmark_rows, but got ${result.rows[0].count}`);
+  const server = await conn.query(`SHOW server_version`);
+  console.log(`PostgreSQL server: ${server.rows[0]?.server_version}`);
 } finally {
   await conn.release();
 }
@@ -344,8 +343,6 @@ const summarize = (samplesMs: number[]) => {
     samples: n,
     meanNs: mean * 1e6,
     medianNs: percentile(sorted, 0.5) * 1e6,
-    lo: (mean - moe) * 1e6, // lower bound of the mean's confidence interval (ns)
-    hi: (mean + moe) * 1e6, // upper bound of the mean's confidence interval (ns)
     rmePct: mean > 0 ? (moe / mean) * 100 : 0,
     opsPerSec: mean > 0 ? 1000 / mean : 0, // mean is ms/op
   };
@@ -360,6 +357,8 @@ const runSuite = async (
 ) => {
   const options = benchOptionFor(queriesPerIteration);
   const pooled = new Map<string, number[]>();
+  // One median per execution order: independent replicates for the winner test
+  const orderMedians = new Map<string, number[]>();
   for (const order of ORDERS) {
     if (typeof (globalThis as any).gc === 'function') (globalThis as any).gc();
     const bench = new Bench({ ...options, name: label });
@@ -371,13 +370,16 @@ const runSuite = async (
       const bucket = pooled.get(task.name) ?? [];
       for (const s of samples) bucket.push(s);
       pooled.set(task.name, bucket);
+      const medians = orderMedians.get(task.name) ?? [];
+      medians.push(percentile([...samples].sort((a, b) => a - b), 0.5));
+      orderMedians.set(task.name, medians);
     }
   }
 
   console.log(`${label} (pooled over ${ORDERS.length} execution orders)`);
 
   const rows = [...pooled.entries()]
-    .map(([name, samples]) => ({ name, ...summarize(samples) }))
+    .map(([name, samples]) => ({ name, ...summarize(samples), orderMedians: orderMedians.get(name) ?? [] }))
     .filter((r) => Number.isFinite(r.medianNs) && Number.isFinite(r.meanNs));
 
   console.table(
@@ -392,19 +394,21 @@ const runSuite = async (
     }))
   );
 
-  // Rank by median latency, but only crown a winner when the leader's mean confidence interval sits entirely
-  // below every rival's, i.e. the gap is statistically real, not noise.
+  // Rank by median latency, but only crown a winner when its median is lower than every rival's in EVERY order:
+  // a sign test, p = (1/2)^6 per rival. The CI over pooled samples is too narrow for this, samples are correlated.
+  const beats = (a: number[], b: number[]) =>
+    a.length === ORDERS.length && b.length === ORDERS.length && a.every((m, o) => m < b[o]!);
   const leader = [...rows].sort((a, b) => a.medianNs - b.medianNs)[0]; // fastest typical (p50) latency
   const meanLeader = [...rows].sort((a, b) => a.meanNs - b.meanNs)[0]; // lowest mean latency
   let winner: string | null = null;
   if (leader && meanLeader) {
-    const clearWinner = rows.every((r) => r.name === leader.name || leader.hi < r.lo);
+    const clearWinner = rows.every((r) => r.name === leader.name || beats(leader.orderMedians, r.orderMedians));
     if (clearWinner) {
       winner = leader.name;
-      console.log(`🏆 Winner: ${leader.name} (${leader.medianNs.toFixed(0)} ns median)`);
+      console.log(`🏆 Winner: ${leader.name} (${leader.medianNs.toFixed(0)} ns median, faster in all ${ORDERS.length} execution orders)`);
     } else {
       console.log(
-        `🤝 No clear winner within margin of error - lowest median: ${leader.name} (${leader.medianNs.toFixed(0)} ns); lowest mean: ${meanLeader.name} (${meanLeader.meanNs.toFixed(0)} ns)`
+        `🤝 No clear winner, not faster in every execution order - lowest median: ${leader.name} (${leader.medianNs.toFixed(0)} ns); lowest mean: ${meanLeader.name} (${meanLeader.meanNs.toFixed(0)} ns)`
       );
     }
   }
@@ -477,7 +481,7 @@ try {
     `nodejs ${process.version}, CPU: ${os.cpus()?.[0]?.model ?? 'unknown'} Cores: ${os.cpus()?.length ?? 'unknown'}, RAM: ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`
   );
   console.log(
-    `Budget per query size: >=${BENCH_QUERIES} queries and >=${BENCH_TIME_MS} ms per client, split across ${ORDERS.length} execution orders`
+    `Budget per query size and client: >=${BENCH_TIME_MS} ms split across ${ORDERS.length} execution orders, >=${BENCH_QUERIES} queries in each order`
   );
 
   const sequentialGroups: Group[] = [];

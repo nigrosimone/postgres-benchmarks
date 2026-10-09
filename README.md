@@ -45,7 +45,7 @@ Each suite, and the run as a whole, ends with a ranking table:
 | `Relative latency` | Geometric mean of the client's median latency, normalized to the fastest client **of each group**. `1.000` = fastest everywhere, `1.100` = 10% slower than the group leader on average |
 | `Slower than best` | Distance from the first place |
 | `Fastest median` | In how many groups it had the lowest median |
-| `Outright wins` | In how many groups it won **statistically** (non-overlapping confidence intervals) |
+| `Outright wins` | In how many groups it won **statistically** (lower median in all 6 execution orders) |
 
 Two details make the aggregate honest:
 
@@ -57,13 +57,14 @@ Two details make the aggregate honest:
   which client happened to be the baseline, while the geometric mean is invariant to that choice
 
 `Fastest median` and `Outright wins` are kept separate on purpose. A client can lead the median in
-a group while the gap is still inside the margin of error - a `3/3` versus `0/3` split says exactly
+a group while the gap is not consistent across execution orders - a `3/3` versus `0/3` split says exactly
 that, instead of hiding it behind a single score.
 
 ### Measurement budget
 
 Two floors, overridable as environment variables. A group runs until it has spent the time **and**
-executed the queries, so whichever is reached last decides the sample count:
+executed the queries, so whichever is reached last decides the sample count. `BENCH_TIME_MS` is split
+across the 6 execution orders, `BENCH_QUERIES` applies to each order:
 
 | Variable | Default | Binds on |
 | --- | --- | --- |
@@ -121,8 +122,8 @@ the upgrade is wanted but blocked on breaking changes in date handling, unrelate
 - All libraries execute queries using prepared statements (see [Prepared statement](https://en.wikipedia.org/wiki/Prepared_statement))
 - All libraries run the exact same query text with the `LIMIT` as a SQL literal (no bound parameters) and consume the results through the same code path
 - The garbage collector is exposed and triggered before **both** the warmup **and** the measured run of each task, so every measurement starts from a clean heap and a GC pause during warmup cannot leak into the measured run (see [tinybench](https://www.npmjs.com/package/tinybench))
-- Each query size is measured under **all 6 execution orders** (every permutation of the 3 clients) and the raw samples are pooled per client, so the execution order is fully removed as a confounder - no library benefits from systematically running first (cold cache/JIT) or last (warmed shared state). The per-run time budget is divided across the permutations, keeping the total sample count and wall-clock close to a single run
-- The winner is ranked by **median** latency (p50) and is only crowned when its confidence interval of the mean does not overlap any rival's; otherwise the run is reported as having no clear winner
+- Each query size is measured under **all 6 execution orders** (every permutation of the 3 clients) and the raw samples are pooled per client, so the execution order is fully removed as a confounder - no library benefits from systematically running first (cold cache/JIT) or last (warmed shared state). The time budget is divided across the permutations, keeping the wall-clock close to a single run
+- The winner is ranked by **median** latency (p50) and is only crowned when its median is lower than every rival's in **all 6 execution orders** (a sign test over 6 independent replicates, p = 1/64 per rival); otherwise the run is reported as having no clear winner. A confidence interval over the pooled samples is not used for this: consecutive samples are correlated, so it comes out far too narrow
 - Queries are warmed up before measurements
 - PostgreSQL is accessed through a Unix domain socket to reduce TCP overhead
 - All libraries run with [PostgreSQL pipeline mode](https://www.postgresql.org/docs/current/libpq-pipeline-mode.html) enabled. `postgres` (porsager/postgres) has always pipelined internally; since `pg` 8.23.0 and `pg-native` 3.9.0 the same is available through the `pipeline: true` client option, so the previous asymmetry is gone and all three are compared on equal terms
@@ -168,6 +169,8 @@ On Docker:
 docker-compose build
 docker-compose up
 ```
+
+On GitHub Actions: every push and pull request runs the benchmark with Docker Compose, the output is in the job summary.
 
 On Ubuntu/Debian:
 
