@@ -1,0 +1,64 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build
+        run: docker compose build
+
+      - name: Run benchmark
+        run: |
+          set -o pipefail
+          docker compose run --rm -T web | tee benchmark.txt
+          { echo '```'; cat benchmark.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: benchmark
+          path: benchmark.txt
+
+  # Separate job so the write token is never exposed to the benchmarked packages
+  readme:
+    needs: benchmark
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: benchmark
+
+      - name: Update README output
+        run: |
+          awk -v f=benchmark.txt '
+            /<!-- benchmark:end -->/ { print "```shell"; while ((getline l < f) > 0) print l; print "```"; skip = 0 }
+            !skip { print }
+            /<!-- benchmark:start -->/ { skip = 1 }
+          ' README.md > README.tmp
+          mv README.tmp README.md
+          git diff --quiet README.md && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898279+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: update benchmark output" README.md
+          git push

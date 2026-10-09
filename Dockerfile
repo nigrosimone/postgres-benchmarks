@@ -18,7 +18,7 @@ USER node
 ENV NODE_DISABLE_COLORS=1
 ENV NODE_ENV=production
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY --chown=node:node . .
 

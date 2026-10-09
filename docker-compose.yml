@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   web:
     stdin_open: true # docker run -i
