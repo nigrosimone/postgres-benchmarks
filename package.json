@@ -28,13 +28,13 @@
     "pg": "^8.23.1",
     "pg-native": "^3.9.1",
     "postgres": "^3.4.9",
-    "tinybench": "^6.2.1"
+    "tinybench": "^6.2.2"
   },
   "overrides": {
     "pg-types": "^4.1.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1"
   },
   "engines": {
