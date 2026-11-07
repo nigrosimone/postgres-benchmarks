@@ -196,13 +196,13 @@ The full output of each run is in the collapsed sections.
 3 runs, each on its own GitHub-hosted runner
 
 Overall relative latency of each run
-┌─────────┬─────┬─────────────────────────────────────────────┬───────────┬─────────┬──────────┐
-│ (index) │ Run │ CPU                                         │ pg-native │ pg      │ postgres │
-├─────────┼─────┼─────────────────────────────────────────────┼───────────┼─────────┼──────────┤
-│ 0       │ 1   │ 'AMD EPYC 9V45 96-Core Processor (4 cores)' │ '1.031'   │ '1.024' │ '1.019'  │
-│ 1       │ 2   │ 'AMD EPYC 9V74 80-Core Processor (4 cores)' │ '1.124'   │ '1.016' │ '1.024'  │
-│ 2       │ 3   │ 'AMD EPYC 7763 64-Core Processor (4 cores)' │ '1.079'   │ '1.012' │ '1.026'  │
-└─────────┴─────┴─────────────────────────────────────────────┴───────────┴─────────┴──────────┘
+┌─────────┬─────┬───────────────────────────────────────────────────────────┬───────────┬─────────┬──────────┐
+│ (index) │ Run │ CPU                                                       │ pg-native │ pg      │ postgres │
+├─────────┼─────┼───────────────────────────────────────────────────────────┼───────────┼─────────┼──────────┤
+│ 0       │ 1   │ 'Intel(R) Xeon(R) 6973P-C (4 cores)'                      │ '1.433'   │ '1.366' │ '1.000'  │
+│ 1       │ 2   │ 'Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz (4 cores)' │ '1.429'   │ '1.457' │ '1.004'  │
+│ 2       │ 3   │ 'AMD EPYC 7763 64-Core Processor (4 cores)'               │ '1.510'   │ '1.417' │ '1.000'  │
+└─────────┴─────┴───────────────────────────────────────────────────────────┴───────────┴─────────┴──────────┘
 
 === Final ranking over all runs ===
 Relative latency is the geometric mean of each client's median latency, normalized to the fastest
@@ -213,32 +213,32 @@ Sequential (9 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.004'          │ '-'              │ '6/9'          │ '3/9'         │
-│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.027'          │ '+2.3%'          │ '3/9'          │ '1/9'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.063'          │ '+5.9%'          │ '0/9'          │ '0/9'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '9/9'          │ '9/9'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.543'          │ '+54.3%'         │ '0/9'          │ '0/9'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.559'          │ '+55.9%'         │ '0/9'          │ '0/9'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Pipelined x10 (9 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.007'          │ '-'              │ '8/9'          │ '6/9'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.043'          │ '+3.5%'          │ '0/9'          │ '0/9'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.092'          │ '+8.4%'          │ '1/9'          │ '1/9'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.002'          │ '-'              │ '8/9'          │ '6/9'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.293'          │ '+29.0%'         │ '1/9'          │ '0/9'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.361'          │ '+35.7%'         │ '0/9'          │ '0/9'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Overall (18 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.017'          │ '-'              │ '11/18'        │ '7/18'        │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.023'          │ '+0.6%'          │ '6/18'         │ '3/18'        │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.077'          │ '+5.9%'          │ '1/18'         │ '1/18'        │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.001'          │ '-'              │ '17/18'        │ '15/18'       │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.413'          │ '+41.1%'         │ '1/18'         │ '0/18'        │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.457'          │ '+45.5%'         │ '0/18'         │ '0/18'        │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 ```
 
 <details>
-<summary>Run 1: AMD EPYC 9V45 96-Core Processor</summary>
+<summary>Run 1: Intel(R) Xeon(R) 6973P-C</summary>
 
 ```shell
 Running benchmarks... 
@@ -246,17 +246,17 @@ GC is exposed
 Pool size: 10
 Dependencies versions:
 {
-  "tinybench": "6.2.2",
+  "tinybench": "6.2.3",
   "pg": "8.23.1",
   "pg-native": "3.9.1",
   "libpq": "1.11.0",
   "pg-types": "4.1.0",
-  "postgres": "3.4.9"
+  "postgres": "4.1.0"
 }
 Database connectivity verified through: socket at /var/run/postgresql
 Pipeline mode: enabled for all clients
 PostgreSQL server: 18.6
-nodejs v26.12.0, CPU: AMD EPYC 9V45 96-Core Processor Cores: 4, RAM: 15.61 GB
+nodejs v26.13.0, CPU: Intel(R) Xeon(R) 6973P-C Cores: 4, RAM: 15.61 GB
 Budget per query size and client: >=9000 ms split across 6 execution orders, >=5000 queries in each order
 
 === Sequential: one query at a time, pool of 10 connections ===
@@ -266,33 +266,33 @@ query_1 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '48399 ± 0.32%'  │ '44716'          │ 20662                  │ 20662     │ 185958  │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '49535 ± 0.32%'  │ '46149'          │ 20188                  │ 20188     │ 181693  │
-│ 2       │ 'postgres (porsager/postgres)'     │ '47866 ± 0.39%'  │ '44496'          │ 20892                  │ 20892     │ 188029  │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '75823 ± 0.25%'  │ '74506'          │ 13189                  │ 13189     │ 118702  │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '78881 ± 0.32%'  │ '78243'          │ 12677                  │ 12677     │ 114098  │
+│ 2       │ 'postgres (porsager/postgres)'     │ '68800 ± 0.30%'  │ '64680'          │ 14535                  │ 14535     │ 130816  │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: postgres (porsager/postgres) (44496 ns); lowest mean: postgres (porsager/postgres) (47866 ns)
+🏆 Winner: postgres (porsager/postgres) (64680 ns median, faster in all 6 execution orders)
 
 
 query_100 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '98834 ± 0.22%'  │ '93509'          │ 10118                  │ 10118     │ 91064   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '100196 ± 0.21%' │ '96224'          │ 9980                   │ 9980      │ 89828   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '113850 ± 1.96%' │ '92437'          │ 8783                   │ 8783      │ 79067   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '143651 ± 0.26%' │ '141068'         │ 6961                   │ 6961      │ 62655   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '141964 ± 0.28%' │ '136039'         │ 7044                   │ 7044      │ 63399   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '98575 ± 0.26%'  │ '94534'          │ 10145                  │ 10145     │ 91304   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: postgres (porsager/postgres) (92437 ns); lowest mean: pg-native (brianc/node-postgres) (98834 ns)
+🏆 Winner: postgres (porsager/postgres) (94534 ns median, faster in all 6 execution orders)
 
 
 query_500 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '278276 ± 0.19%' │ '271414'         │ 3594                   │ 3594      │ 32345   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '270072 ± 0.27%' │ '259705'         │ 3703                   │ 3703      │ 33328   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '353008 ± 2.37%' │ '261568'         │ 2833                   │ 2833      │ 30000   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '376702 ± 0.19%' │ '366792'         │ 2655                   │ 2655      │ 30000   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '353257 ± 0.26%' │ '340044'         │ 2831                   │ 2831      │ 30000   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '184080 ± 0.26%' │ '176019'         │ 5432                   │ 5432      │ 48896   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: pg (brianc/node-postgres) (259705 ns); lowest mean: pg (brianc/node-postgres) (270072 ns)
+🏆 Winner: postgres (porsager/postgres) (176019 ns median, faster in all 6 execution orders)
 
 === Pipelined: 10 concurrent queries on a single connection ===
 
@@ -301,33 +301,33 @@ query_1_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '260418 ± 0.42%' │ '253387'         │ 3840                   │ 38400     │ 34563   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '240213 ± 0.65%' │ '229891'         │ 4163                   │ 41630     │ 37470   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '259114 ± 0.85%' │ '241068'         │ 3859                   │ 38593     │ 34738   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '308024 ± 0.45%' │ '301479'         │ 3247                   │ 32465     │ 29223   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '280458 ± 0.79%' │ '268488'         │ 3566                   │ 35656     │ 32093   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '274413 ± 0.34%' │ '264692'         │ 3644                   │ 36441     │ 32801   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (229891 ns median, faster in all 6 execution orders)
+🤝 No clear winner, not faster in every execution order - lowest median: postgres (porsager/postgres) (264692 ns); lowest mean: postgres (porsager/postgres) (274413 ns)
 
 
 query_100_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '504493 ± 0.36%' │ '480874'         │ 1982                   │ 19822     │ 17842   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '491464 ± 0.32%' │ '468026'         │ 2035                   │ 20347     │ 18315   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '669177 ± 2.49%' │ '472823'         │ 1494                   │ 14944     │ 13452   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '623987 ± 0.34%' │ '591406'         │ 1603                   │ 16026     │ 14427   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '684612 ± 1.87%' │ '545136'         │ 1461                   │ 14607     │ 13148   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '509141 ± 0.30%' │ '492631'         │ 1964                   │ 19641     │ 17680   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: pg (brianc/node-postgres) (468026 ns); lowest mean: pg (brianc/node-postgres) (491464 ns)
+🤝 No clear winner, not faster in every execution order - lowest median: postgres (porsager/postgres) (492631 ns); lowest mean: postgres (porsager/postgres) (509141 ns)
 
 
 query_500_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬───────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns)  │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼───────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '1904284 ± 0.36%' │ '1859393'        │ 525                    │ 5251      │ 4730    │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '2061883 ± 0.63%' │ '1985732'        │ 485                    │ 4850      │ 4367    │
-│ 2       │ 'postgres (porsager/postgres)'     │ '2709988 ± 2.66%' │ '1952792'        │ 369                    │ 3690      │ 3329    │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '2458351 ± 0.23%' │ '2387465'        │ 407                    │ 4068      │ 3665    │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '2971041 ± 2.11%' │ '2322070'        │ 337                    │ 3366      │ 3080    │
+│ 2       │ 'postgres (porsager/postgres)'     │ '1404191 ± 0.33%' │ '1351907'        │ 712                    │ 7122      │ 6412    │
 └─────────┴────────────────────────────────────┴───────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg-native (brianc/node-postgres) (1859393 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (1351907 ns median, faster in all 6 execution orders)
 
 
 === Final ranking ===
@@ -339,34 +339,34 @@ Sequential (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.002'          │ '-'              │ '2/3'          │ '0/3'         │
-│ 1       │ '🥈' │ 'pg-native (brianc/node-postgres)' │ '1.020'          │ '+1.8%'          │ '0/3'          │ '0/3'         │
-│ 2       │ '🥉' │ 'pg (brianc/node-postgres)'        │ '1.026'          │ '+2.3%'          │ '1/3'          │ '0/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '3/3'          │ '3/3'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.498'          │ '+49.8%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.530'          │ '+53.0%'         │ '0/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Pipelined x10 (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.022'          │ '-'              │ '2/3'          │ '1/3'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.036'          │ '+1.4%'          │ '0/3'          │ '0/3'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.042'          │ '+2.0%'          │ '1/3'          │ '1/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '3/3'          │ '1/3'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.245'          │ '+24.5%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.342'          │ '+34.2%'         │ '0/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Overall (6 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.019'          │ '-'              │ '2/6'          │ '0/6'         │
-│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.024'          │ '+0.5%'          │ '3/6'          │ '1/6'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.031'          │ '+1.2%'          │ '1/6'          │ '1/6'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '6/6'          │ '4/6'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.366'          │ '+36.6%'         │ '0/6'          │ '0/6'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.433'          │ '+43.3%'         │ '0/6'          │ '0/6'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 ```
 
 </details>
 
 <details>
-<summary>Run 2: AMD EPYC 9V74 80-Core Processor</summary>
+<summary>Run 2: Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz</summary>
 
 ```shell
 Running benchmarks... 
@@ -374,17 +374,17 @@ GC is exposed
 Pool size: 10
 Dependencies versions:
 {
-  "tinybench": "6.2.2",
+  "tinybench": "6.2.3",
   "pg": "8.23.1",
   "pg-native": "3.9.1",
   "libpq": "1.11.0",
   "pg-types": "4.1.0",
-  "postgres": "3.4.9"
+  "postgres": "4.1.0"
 }
 Database connectivity verified through: socket at /var/run/postgresql
 Pipeline mode: enabled for all clients
 PostgreSQL server: 18.6
-nodejs v26.12.0, CPU: AMD EPYC 9V74 80-Core Processor Cores: 4, RAM: 15.61 GB
+nodejs v26.13.0, CPU: Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz Cores: 4, RAM: 15.61 GB
 Budget per query size and client: >=9000 ms split across 6 execution orders, >=5000 queries in each order
 
 === Sequential: one query at a time, pool of 10 connections ===
@@ -394,33 +394,33 @@ query_1 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '91189 ± 0.18%'  │ '87492'          │ 10966                  │ 10966     │ 98699   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '90514 ± 0.25%'  │ '85929'          │ 11048                  │ 11048     │ 99435   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '87366 ± 0.58%'  │ '81213'          │ 11446                  │ 11446     │ 103017  │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '81222 ± 0.34%'  │ '76893'          │ 12312                  │ 12312     │ 110812  │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '85809 ± 0.31%'  │ '81098'          │ 11654                  │ 11654     │ 104886  │
+│ 2       │ 'postgres (porsager/postgres)'     │ '69859 ± 0.35%'  │ '65875'          │ 14314                  │ 14314     │ 128833  │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: postgres (porsager/postgres) (81213 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (65875 ns median, faster in all 6 execution orders)
 
 
 query_100 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '204475 ± 0.17%' │ '197428'         │ 4891                   │ 4891      │ 44018   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '194704 ± 0.23%' │ '187212'         │ 5136                   │ 5136      │ 46226   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '211847 ± 1.97%' │ '179882'         │ 4720                   │ 4720      │ 42486   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '187706 ± 0.31%' │ '179249'         │ 5327                   │ 5327      │ 47949   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '201335 ± 0.32%' │ '191623'         │ 4967                   │ 4967      │ 44704   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '123945 ± 0.34%' │ '117136'         │ 8068                   │ 8068      │ 72616   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: postgres (porsager/postgres) (179882 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (117136 ns median, faster in all 6 execution orders)
 
 
 query_500 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '572034 ± 0.12%' │ '565884'         │ 1748                   │ 1748      │ 30000   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '494051 ± 0.17%' │ '484721'         │ 2024                   │ 2024      │ 30000   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '598942 ± 1.77%' │ '485442'         │ 1670                   │ 1670      │ 30000   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '543395 ± 0.15%' │ '533267'         │ 1840                   │ 1840      │ 30000   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '523897 ± 0.19%' │ '509498'         │ 1909                   │ 1909      │ 30000   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '266486 ± 0.35%' │ '259396'         │ 3753                   │ 3753      │ 33775   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: pg (brianc/node-postgres) (484721 ns); lowest mean: pg (brianc/node-postgres) (494051 ns)
+🏆 Winner: postgres (porsager/postgres) (259396 ns median, faster in all 6 execution orders)
 
 === Pipelined: 10 concurrent queries on a single connection ===
 
@@ -429,33 +429,33 @@ query_1_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '455970 ± 0.61%' │ '438612'         │ 2193                   │ 21931     │ 19741   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '403271 ± 1.13%' │ '380865'         │ 2480                   │ 24797     │ 22321   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '421583 ± 0.74%' │ '399753'         │ 2372                   │ 23720     │ 21352   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '402781 ± 0.57%' │ '389900'         │ 2483                   │ 24827     │ 22348   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '371711 ± 1.12%' │ '351831'         │ 2690                   │ 26903     │ 24216   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '370870 ± 0.39%' │ '359678'         │ 2696                   │ 26964     │ 24271   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (380865 ns median, faster in all 6 execution orders)
+🤝 No clear winner, not faster in every execution order - lowest median: pg (brianc/node-postgres) (351831 ns); lowest mean: postgres (porsager/postgres) (370870 ns)
 
 
 query_100_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬───────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns)  │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼───────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '999201 ± 0.31%'  │ '973368'         │ 1001                   │ 10008     │ 9011    │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '1075287 ± 2.40%' │ '847678'         │ 930                    │ 9300      │ 8374    │
-│ 2       │ 'postgres (porsager/postgres)'     │ '1144685 ± 2.42%' │ '886838'         │ 874                    │ 8736      │ 7875    │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '932758 ± 0.46%'  │ '898414'         │ 1072                   │ 10721     │ 9652    │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '1219953 ± 2.68%' │ '945041'         │ 820                    │ 8197      │ 7381    │
+│ 2       │ 'postgres (porsager/postgres)'     │ '735280 ± 0.37%'  │ '715047'         │ 1360                   │ 13600     │ 12243   │
 └─────────┴────────────────────────────────────┴───────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (847678 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (715047 ns median, faster in all 6 execution orders)
 
 
 query_500_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬───────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns)  │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼───────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '3927823 ± 0.23%' │ '3863437'        │ 255                    │ 2546      │ 3000    │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '4453332 ± 2.16%' │ '3492668'        │ 225                    │ 2246      │ 3000    │
-│ 2       │ 'postgres (porsager/postgres)'     │ '4753162 ± 2.37%' │ '3653601'        │ 210                    │ 2104      │ 3000    │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '3699153 ± 0.33%' │ '3615909'        │ 270                    │ 2703      │ 3000    │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '5094417 ± 2.27%' │ '3987420'        │ 196                    │ 1963      │ 3000    │
+│ 2       │ 'postgres (porsager/postgres)'     │ '2205088 ± 0.38%' │ '2175352'        │ 453                    │ 4535      │ 4084    │
 └─────────┴────────────────────────────────────┴───────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (3492668 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (2175352 ns median, faster in all 6 execution orders)
 
 
 === Final ranking ===
@@ -467,27 +467,27 @@ Sequential (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '2/3'          │ '2/3'         │
-│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.033'          │ '+3.2%'          │ '1/3'          │ '0/3'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.113'          │ '+11.3%'         │ '0/3'          │ '0/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '3/3'          │ '3/3'         │
+│ 1       │ '🥈' │ 'pg-native (brianc/node-postgres)' │ '1.543'          │ '+54.3%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg (brianc/node-postgres)'        │ '1.582'          │ '+58.2%'         │ '0/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Pipelined x10 (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.000'          │ '-'              │ '3/3'          │ '3/3'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.047'          │ '+4.7%'          │ '0/3'          │ '0/3'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.135'          │ '+13.5%'         │ '0/3'          │ '0/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.007'          │ '-'              │ '2/3'          │ '2/3'         │
+│ 1       │ '🥈' │ 'pg-native (brianc/node-postgres)' │ '1.323'          │ '+31.3%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg (brianc/node-postgres)'        │ '1.343'          │ '+33.3%'         │ '1/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Overall (6 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.016'          │ '-'              │ '4/6'          │ '3/6'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.024'          │ '+0.7%'          │ '2/6'          │ '2/6'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.124'          │ '+10.6%'         │ '0/6'          │ '0/6'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.004'          │ '-'              │ '5/6'          │ '5/6'         │
+│ 1       │ '🥈' │ 'pg-native (brianc/node-postgres)' │ '1.429'          │ '+42.3%'         │ '0/6'          │ '0/6'         │
+│ 2       │ '🥉' │ 'pg (brianc/node-postgres)'        │ '1.457'          │ '+45.2%'         │ '1/6'          │ '0/6'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 ```
 
@@ -502,17 +502,17 @@ GC is exposed
 Pool size: 10
 Dependencies versions:
 {
-  "tinybench": "6.2.2",
+  "tinybench": "6.2.3",
   "pg": "8.23.1",
   "pg-native": "3.9.1",
   "libpq": "1.11.0",
   "pg-types": "4.1.0",
-  "postgres": "3.4.9"
+  "postgres": "4.1.0"
 }
 Database connectivity verified through: socket at /var/run/postgresql
 Pipeline mode: enabled for all clients
 PostgreSQL server: 18.6
-nodejs v26.12.0, CPU: AMD EPYC 7763 64-Core Processor Cores: 4, RAM: 15.61 GB
+nodejs v26.13.0, CPU: AMD EPYC 7763 64-Core Processor Cores: 4, RAM: 15.61 GB
 Budget per query size and client: >=9000 ms split across 6 execution orders, >=5000 queries in each order
 
 === Sequential: one query at a time, pool of 10 connections ===
@@ -522,33 +522,33 @@ query_1 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '129438 ± 0.14%' │ '125354'         │ 7726                   │ 7726      │ 69534   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '132571 ± 0.21%' │ '128069'         │ 7543                   │ 7543      │ 67890   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '127800 ± 0.48%' │ '120916'         │ 7825                   │ 7825      │ 70425   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '125047 ± 0.17%' │ '120065'         │ 7997                   │ 7997      │ 71977   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '128911 ± 0.24%' │ '122931'         │ 7757                   │ 7757      │ 69819   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '105931 ± 0.21%' │ '100729'         │ 9440                   │ 9440      │ 84964   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: postgres (porsager/postgres) (120916 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (100729 ns median, faster in all 6 execution orders)
 
 
 query_100 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '263250 ± 0.16%' │ '256159'         │ 3799                   │ 3799      │ 34191   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '262273 ± 0.15%' │ '254965'         │ 3813                   │ 3813      │ 34318   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '279869 ± 1.53%' │ '251860'         │ 3573                   │ 3573      │ 32160   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '248822 ± 0.18%' │ '239209'         │ 4019                   │ 4019      │ 36173   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '246955 ± 0.24%' │ '236904'         │ 4049                   │ 4049      │ 36446   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '163939 ± 0.23%' │ '155271'         │ 6100                   │ 6100      │ 54901   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: postgres (porsager/postgres) (251860 ns); lowest mean: pg (brianc/node-postgres) (262273 ns)
+🏆 Winner: postgres (porsager/postgres) (155271 ns median, faster in all 6 execution orders)
 
 
 query_500 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '658700 ± 0.08%' │ '651608'         │ 1518                   │ 1518      │ 30000   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '590764 ± 0.13%' │ '581397'         │ 1693                   │ 1693      │ 30000   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '698324 ± 1.38%' │ '596254'         │ 1432                   │ 1432      │ 30000   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '634068 ± 0.08%' │ '628791'         │ 1577                   │ 1577      │ 30000   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '567834 ± 0.15%' │ '557786'         │ 1761                   │ 1761      │ 30000   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '289576 ± 0.20%' │ '278563'         │ 3453                   │ 3453      │ 31090   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (581397 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (278563 ns median, faster in all 6 execution orders)
 
 === Pipelined: 10 concurrent queries on a single connection ===
 
@@ -557,33 +557,33 @@ query_1_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns) │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '583709 ± 0.60%' │ '565829'         │ 1713                   │ 17132     │ 15422   │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '502701 ± 0.71%' │ '477786'         │ 1989                   │ 19893     │ 17906   │
-│ 2       │ 'postgres (porsager/postgres)'     │ '513646 ± 0.71%' │ '491814'         │ 1947                   │ 19469     │ 17526   │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '570118 ± 0.53%' │ '553178'         │ 1754                   │ 17540     │ 15792   │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '502048 ± 1.05%' │ '475322'         │ 1992                   │ 19918     │ 17929   │
+│ 2       │ 'postgres (porsager/postgres)'     │ '487836 ± 0.34%' │ '473228'         │ 2050                   │ 20499     │ 18453   │
 └─────────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (477786 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (473228 ns median, faster in all 6 execution orders)
 
 
 query_100_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬───────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns)  │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼───────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '1125103 ± 0.37%' │ '1083279'        │ 889                    │ 8888      │ 8003    │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '1035731 ± 0.39%' │ '1000072'        │ 966                    │ 9655      │ 8693    │
-│ 2       │ 'postgres (porsager/postgres)'     │ '1282075 ± 2.19%' │ '1039647'        │ 780                    │ 7800      │ 7025    │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '1085209 ± 0.32%' │ '1053948'        │ 921                    │ 9215      │ 8297    │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '1195132 ± 2.20%' │ '967936'         │ 837                    │ 8367      │ 7537    │
+│ 2       │ 'postgres (porsager/postgres)'     │ '830532 ± 0.28%'  │ '815781'         │ 1204                   │ 12040     │ 10840   │
 └─────────┴────────────────────────────────────┴───────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🤝 No clear winner, not faster in every execution order - lowest median: pg (brianc/node-postgres) (1000072 ns); lowest mean: pg (brianc/node-postgres) (1035731 ns)
+🏆 Winner: postgres (porsager/postgres) (815781 ns median, faster in all 6 execution orders)
 
 
 query_500_pipelined_x10 (pooled over 6 execution orders)
 ┌─────────┬────────────────────────────────────┬───────────────────┬──────────────────┬────────────────────────┬───────────┬─────────┐
 │ (index) │ Task name                          │ Latency avg (ns)  │ Latency med (ns) │ Throughput avg (ops/s) │ Queries/s │ Samples │
 ├─────────┼────────────────────────────────────┼───────────────────┼──────────────────┼────────────────────────┼───────────┼─────────┤
-│ 0       │ 'pg-native (brianc/node-postgres)' │ '4199001 ± 0.24%' │ '4144297'        │ 238                    │ 2382      │ 3000    │
-│ 1       │ 'pg (brianc/node-postgres)'        │ '4086664 ± 0.49%' │ '3984230'        │ 245                    │ 2447      │ 3000    │
-│ 2       │ 'postgres (porsager/postgres)'     │ '5230193 ± 2.05%' │ '4237665'        │ 191                    │ 1912      │ 3000    │
+│ 0       │ 'pg-native (brianc/node-postgres)' │ '4139795 ± 0.21%' │ '4087476'        │ 242                    │ 2416      │ 3000    │
+│ 1       │ 'pg (brianc/node-postgres)'        │ '4827868 ± 1.96%' │ '3927332'        │ 207                    │ 2071      │ 3000    │
+│ 2       │ 'postgres (porsager/postgres)'     │ '2190170 ± 0.33%' │ '2157820'        │ 457                    │ 4566      │ 4113    │
 └─────────┴────────────────────────────────────┴───────────────────┴──────────────────┴────────────────────────┴───────────┴─────────┘
-🏆 Winner: pg (brianc/node-postgres) (3984230 ns median, faster in all 6 execution orders)
+🏆 Winner: postgres (porsager/postgres) (2157820 ns median, faster in all 6 execution orders)
 
 
 === Final ranking ===
@@ -595,27 +595,27 @@ Sequential (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.008'          │ '-'              │ '2/3'          │ '1/3'         │
-│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.024'          │ '+1.5%'          │ '1/3'          │ '1/3'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.057'          │ '+4.8%'          │ '0/3'          │ '0/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '3/3'          │ '3/3'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.551'          │ '+55.1%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.606'          │ '+60.6%'         │ '0/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Pipelined x10 (3 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.000'          │ '-'              │ '3/3'          │ '2/3'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.044'          │ '+4.4%'          │ '0/3'          │ '0/3'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.101'          │ '+10.1%'         │ '0/3'          │ '0/3'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '3/3'          │ '3/3'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.294'          │ '+29.4%'         │ '0/3'          │ '0/3'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.420'          │ '+42.0%'         │ '0/3'          │ '0/3'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 
 Overall (6 groups)
 ┌─────────┬──────┬────────────────────────────────────┬──────────────────┬──────────────────┬────────────────┬───────────────┐
 │ (index) │      │ Task name                          │ Relative latency │ Slower than best │ Fastest median │ Outright wins │
 ├─────────┼──────┼────────────────────────────────────┼──────────────────┼──────────────────┼────────────────┼───────────────┤
-│ 0       │ '🥇' │ 'pg (brianc/node-postgres)'        │ '1.012'          │ '-'              │ '4/6'          │ '3/6'         │
-│ 1       │ '🥈' │ 'postgres (porsager/postgres)'     │ '1.026'          │ '+1.4%'          │ '2/6'          │ '1/6'         │
-│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.079'          │ '+6.6%'          │ '0/6'          │ '0/6'         │
+│ 0       │ '🥇' │ 'postgres (porsager/postgres)'     │ '1.000'          │ '-'              │ '6/6'          │ '6/6'         │
+│ 1       │ '🥈' │ 'pg (brianc/node-postgres)'        │ '1.417'          │ '+41.7%'         │ '0/6'          │ '0/6'         │
+│ 2       │ '🥉' │ 'pg-native (brianc/node-postgres)' │ '1.510'          │ '+51.0%'         │ '0/6'          │ '0/6'         │
 └─────────┴──────┴────────────────────────────────────┴──────────────────┴──────────────────┴────────────────┴───────────────┘
 ```
 
