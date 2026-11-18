@@ -27,7 +27,7 @@
   "dependencies": {
     "pg": "^8.23.1",
     "pg-native": "^3.9.1",
-    "postgres": "^4.1.0",
+    "postgres": "^4.1.1",
     "tinybench": "^6.2.3"
   },
   "overrides": {
